@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>  
+  
+<config>   
+  <file title="windows" size="10Mb">   
+    <!-- File Fisrt Comment -->    
+    <!-- File Second Comment -->    
+    <paths attr="directory1">   
+      <!-- Paths Comment -->    
+      <pathname title="123">abc</pathname>    
+      <pathname title="456">efg</pathname>    
+      <pathname title="789">hij</pathname>   
+    </paths>    
+    <paths attr="directory2">   
+      <pathname title="111">klm<!-- pathname Comment -->    
+      </pathname>    
+      <pathname title="222">nop</pathname>    
+      <pathname title="333">qrs</pathname>   
+    </paths>   
+  </file>   
+</config>  

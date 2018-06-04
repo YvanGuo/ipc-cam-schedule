@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Mission>
+  <SDCs>
+    <SDC>
+      <IP>192.168.9.229</IP>
+      <port>8000</port>
+      <usrName>admin</usrName>
+      <pwd>admin12345</pwd>
+      <RTSPaddr>rtsp://admin:admin12345@192.168.9.229/h264/ch1/main/av_stream</RTSPaddr>
+      <brandName>HIK</brandName>
+      <camNum>88</camNum>
+      <productType>DS-2DF7286-A</productType>
+    </SDC>
+    <SDC>
+      <IP>192.168.9.228</IP>
+      <port>8000</port>
+      <usrName>admin</usrName>
+      <pwd>admin12345</pwd>
+      <RTSPaddr>rtsp://admin:admin12345@192.168.9.228/h264/ch1/main/av_stream</RTSPaddr>
+      <brandName>HIK</brandName>
+      <camNum>89</camNum>
+      <productType>DS-2DF7286-A</productType>
+    </SDC>
+    <SDC>
+      <IP>192.168.9.227</IP>
+      <port>8000</port>
+      <usrName>admin</usrName>
+      <pwd>admin12345</pwd>
+      <RTSPaddr>rtsp://admin:admin12345@192.168.9.227/h264/ch1/main/av_stream</RTSPaddr>
+      <brandName>HIK</brandName>
+      <camNum>90</camNum>
+      <productType>DS-2DF7286-A</productType>
+    </SDC>
+  </SDCs>
+
+  <capDevs>
+    <capDev>
+      <IP>192.168.9.200</IP>
+      <devType>XMYHL-LBTCZDZP</devType>
+      <MAC>38.162.1.132.84.114</MAC>
+      <devNum>LBTCZDZPXXXXXXX01</devNum>
+      <devName>嵌入式路边停车自动抓拍仪</devName>
+    </capDev>
+    <capDev>
+      <IP>192.168.9.201</IP>
+      <devType>XMYHL-LBTCZDZP</devType>
+      <MAC>38.162.1.132.84.115</MAC>
+      <devNum>LBTCZDZPXXXXXXX02</devNum>
+      <devName>嵌入式路边停车自动抓拍仪</devName>
+    </capDev>
+  </capDevs>
+
+</Mission>
