@@ -80,7 +80,7 @@ public:
             }
 			for(int i=0; i<bytes_transferred; i++){
 
-				printf("%x,", data_[i]);
+				printf("[1]%x,", data_[i]);
 			}
 
 			printf("\r\n");
@@ -93,79 +93,71 @@ public:
 
 			printf("head.type = %d\r\n", head.type);
 
-			if(1 == head.type){
-
+			if(1 == head.type){ //设备登陆请求
 				
-				
-
 				protocol.ParseLoginInfo(data_+5, bytes_transferred-5, &loginInfo);
 
+				capDev.init(&socket_, &loginInfo);
 
-				mission.init(&socket_, &loginInfo);
-			
-				mission.start();
-							
+				capDev.missionNum = MissionMatch(&capDev);
+				printf("capDev.missionNum = %d\r\n", capDev.missionNum);
 
-				printf("devtype = %d\r\n",loginInfo.devType);
+				mission = MissionGet(capDev.missionNum);
+				if(NULL == mission){
 
-				printf("MAC: ");
-				for(int i=0; i<6; i++){
-
-					printf("%x.",loginInfo.MAC[i]);
+					printf("erro mission = NULL\r\n");
 				}
-				printf("\r\n");
+
+				capDev.SpdDomeCam = mission->getFreeSDC();
+				if(NULL == capDev.SpdDomeCam){
+
+					printf("erro capDev.SpdDomeCam = NULL\r\n");
+				}
+
+				printf("[session::showCfg];SpdDomeCam[%d]: m_usrName = %s\r\n",  0, capDev.SpdDomeCam->m_usrName.c_str());
+				printf("[session::showCfg];SpdDomeCam[%d]: m_pwd = %s\r\n",  0, capDev.SpdDomeCam->m_pwd.c_str());
+				printf("[session::showCfg];SpdDomeCam[%d]: m_IP = %s\r\n",  0, capDev.SpdDomeCam->m_IP.c_str());
+				printf("[session::showCfg];SpdDomeCam[%d]: m_port = %d\r\n",  0, capDev.SpdDomeCam->m_port);
+				printf("[session::showCfg];SpdDomeCam[%d]: RTSPaddr = %s\r\n",  0, capDev.SpdDomeCam->RTSPaddr.c_str());
+				printf("[session::showCfg];SpdDomeCam[%d]: camNum = %s\r\n",  0, capDev.SpdDomeCam->camNum.c_str());
+				printf("[session::showCfg];SpdDomeCam[%d]: productType = %s\r\n",  0, capDev.SpdDomeCam->productType.c_str());
+				printf("[session::showCfg];SpdDomeCam[%d]: brandName = %s\r\n",  0, capDev.SpdDomeCam->brandName.c_str());
 				
-				printf("nameLen = %d\r\n",loginInfo.nameLen);
-				printf("name = %s\r\n",loginInfo.name);
-				printf("devNumLen = %d\r\n",loginInfo.devNumLen);
-				printf("devNum = %s\r\n",loginInfo.devNum);
-
-				printf("IP: ");
-				for(int i=0; i<4; i++){
-
-					printf("%d.",loginInfo.IP[i]);
-				}
-				printf("\r\n");
-
-				printf("MASK: ");
-				for(int i=0; i<4; i++){
-
-					printf("%d.",loginInfo.MASK[i]);
-				}
-				printf("\r\n");
-
-				printf("gateway: ");
-				for(int i=0; i<4; i++){
-
-					printf("%d.",loginInfo.gateway[i]);
-				}
-				printf("\r\n");
-
-				printf("serverIP: ");
-				for(int i=0; i<4; i++){
-
-					printf("%d.",loginInfo.serverIP[i]);
-				}
-				printf("\r\n");
-
-				printf("serverPort = %d\r\n",loginInfo.serverPort);
-
+				for(int j=0; j<capDev.SpdDomeCam->totalPTZpreset; j++){
 			
+					printf("[CMission::showCfg];SpdDomeCam[%d]: missionPreset[%d] = %d\r\n",  0, j, capDev.SpdDomeCam->missionPreset[j].presetNum);
+				}
+				
+
+				printf("[session::showCfg];capDev[%d]: devName = %s\r\n",	0, capDev.devName.c_str());
+				printf("[session::showCfg];capDev[%d]: devNum = %s\r\n",  0, capDev.devNum.c_str());
+				printf("[session::showCfg];capDev[%d]: devType = %s\r\n",	0, capDev.devType.c_str());
+				printf("[session::showCfg];capDev[%d]: IP = %s\r\n",  0, capDev.IP.c_str());
+				printf("[session::showCfg];capDev[%d]: MAC = %s\r\n",	0, capDev.MAC.c_str());
+
+				capDev.start();
+
+				int32_t frameLen = protocol.PackageResponeFrame(data_write, LOGIN_RESP, 1);
+				printf("frameLen = %d\r\n", frameLen);
+				if(frameLen > 0){
+
+					boost::asio::async_write(socket_, boost::asio::buffer(data_write, frameLen),  boost::bind(&CCaptureDevSession::handle_write, this,
+					   boost::asio::placeholders::error));
+				}
+				
+
+					
 			}
 			else if(101 == head.type){
-
-				
+		
 				//memset(data_write, 0, MAX_PACKET_LEN);
 				//*((uint32_t *)data_write) = 5;
 				//data_write[4] = 102;
 				
 				printf("get heartbeat start respone: \r\n");
 
-			
-				
-				
 			}
-			else if(3 == head.type){
+			else if(5 == head.type){ //目标锁定应答
 
 				uint8_t *p = data_+5;
 
@@ -178,6 +170,38 @@ public:
 				printf("erroCode = %d\r\n",*(uint32_t *)p);
 
 				status = 0;
+	
+				
+			}
+			else if(3 == head.type){//  违停抓拍调度。
+
+				uint8_t *p = data_+5;
+
+				printf("Snap Schedule respone\r\n");
+			
+				printf("result = %d\r\n",*p);
+				p++;
+				printf("report type = %d\r\n",*p);
+				p++;
+				printf("erroCode = %d\r\n",*(uint32_t *)p);
+
+				status = 0;
+
+				if(MISSION_COMPLETED == capDev.missionStatus \
+					|| MISSION_FAILD == capDev.missionStatus){
+
+					capDev.SpdDomeCam = mission->getFreeSDC();
+					capDev.missionStatus = MISSION_READY;
+					
+					if(NULL == capDev.SpdDomeCam){
+	
+						printf("erro capDev.SpdDomeCam = NULL\r\n");
+					}
+
+					printf("start chg mission cur SpdDomeCam is %s................................................\r\n", capDev.SpdDomeCam->camNum.c_str());
+
+				}
+				
 	
 				
 			}
@@ -210,6 +234,13 @@ public:
         }
     }
 
+	string getEndpointIP(){
+
+
+		return socket_.remote_endpoint().address().to_v4().to_string();
+
+	}
+
 private:
     tcp::socket socket_;
     unsigned char data_[MAX_PACKET_LEN];
@@ -217,7 +248,8 @@ private:
     int recv_times;
 	int8_t status = 1;
 
-	CMission mission;
+	CMission *mission;
+	CCaptureDevice capDev;
 };
 
 

@@ -1085,8 +1085,8 @@ ipc_server-mission_config.o: mission_config.cpp \
  /usr/include/bits/siginfo.h /usr/include/bits/sigaction.h \
  /usr/include/bits/sigcontext.h /usr/include/bits/sigstack.h \
  /usr/include/sys/ucontext.h /usr/include/bits/sigthread.h \
- ../inc/CaptureDevice.h ../inc/SpeedDomeCam.h ../inc/HIKCam.h \
- ../inc/HCNetSDK.h /usr/local/include/boost/asio.hpp \
+ ../inc/CaptureDevice.h ../inc/SpeedDomeCam.h \
+ /usr/local/include/boost/asio.hpp \
  /usr/local/include/boost/asio/associated_allocator.hpp \
  /usr/local/include/boost/asio/detail/config.hpp \
  /usr/include/linux/version.h \
@@ -1713,7 +1713,28 @@ ipc_server-mission_config.o: mission_config.cpp \
  /usr/local/include/boost/thread/executors/executor_adaptor.hpp \
  /usr/local/include/boost/thread/executors/generic_executor_ref.hpp \
  /usr/local/include/boost/thread/detail/atomic_undef_macros.hpp \
- /usr/local/include/boost/thread/detail/atomic_redef_macros.hpp
+ /usr/local/include/boost/thread/detail/atomic_redef_macros.hpp \
+ ../inc/HIKCam.h ../inc/HCNetSDK.h ../inc/sql_conn.h \
+ /usr/local/include/boost/format.hpp \
+ /usr/local/include/boost/format/detail/compat_workarounds.hpp \
+ /usr/local/include/boost/format/detail/config_macros.hpp \
+ /usr/local/include/boost/format/detail/workarounds_gcc-2_95.hpp \
+ /usr/local/include/boost/format/detail/workarounds_stlport.hpp \
+ /usr/local/include/boost/format/format_fwd.hpp \
+ /usr/local/include/boost/format/internals_fwd.hpp \
+ /usr/local/include/boost/format/internals.hpp \
+ /usr/local/include/boost/format/alt_sstream.hpp \
+ /usr/local/include/boost/format/alt_sstream_impl.hpp \
+ /usr/local/include/boost/format/format_class.hpp \
+ /usr/local/include/boost/format/exceptions.hpp \
+ /usr/local/include/boost/format/format_implementation.hpp \
+ /usr/local/include/boost/format/group.hpp \
+ /usr/local/include/boost/format/feed_args.hpp \
+ /usr/local/include/boost/format/detail/msvc_disambiguater.hpp \
+ /usr/local/include/boost/format/parsing.hpp \
+ /usr/local/include/boost/format/free_funcs.hpp \
+ /usr/local/include/boost/format/detail/unset_macros.hpp \
+ /usr/local/include/sqlite3.h
 
 /usr/include/stdc-predef.h:
 
@@ -4039,10 +4060,6 @@ ipc_server-mission_config.o: mission_config.cpp \
 
 ../inc/SpeedDomeCam.h:
 
-../inc/HIKCam.h:
-
-../inc/HCNetSDK.h:
-
 /usr/local/include/boost/asio.hpp:
 
 /usr/local/include/boost/asio/associated_allocator.hpp:
@@ -5340,3 +5357,49 @@ ipc_server-mission_config.o: mission_config.cpp \
 /usr/local/include/boost/thread/detail/atomic_undef_macros.hpp:
 
 /usr/local/include/boost/thread/detail/atomic_redef_macros.hpp:
+
+../inc/HIKCam.h:
+
+../inc/HCNetSDK.h:
+
+../inc/sql_conn.h:
+
+/usr/local/include/boost/format.hpp:
+
+/usr/local/include/boost/format/detail/compat_workarounds.hpp:
+
+/usr/local/include/boost/format/detail/config_macros.hpp:
+
+/usr/local/include/boost/format/detail/workarounds_gcc-2_95.hpp:
+
+/usr/local/include/boost/format/detail/workarounds_stlport.hpp:
+
+/usr/local/include/boost/format/format_fwd.hpp:
+
+/usr/local/include/boost/format/internals_fwd.hpp:
+
+/usr/local/include/boost/format/internals.hpp:
+
+/usr/local/include/boost/format/alt_sstream.hpp:
+
+/usr/local/include/boost/format/alt_sstream_impl.hpp:
+
+/usr/local/include/boost/format/format_class.hpp:
+
+/usr/local/include/boost/format/exceptions.hpp:
+
+/usr/local/include/boost/format/format_implementation.hpp:
+
+/usr/local/include/boost/format/group.hpp:
+
+/usr/local/include/boost/format/feed_args.hpp:
+
+/usr/local/include/boost/format/detail/msvc_disambiguater.hpp:
+
+/usr/local/include/boost/format/parsing.hpp:
+
+/usr/local/include/boost/format/free_funcs.hpp:
+
+/usr/local/include/boost/format/detail/unset_macros.hpp:
+
+/usr/local/include/sqlite3.h:

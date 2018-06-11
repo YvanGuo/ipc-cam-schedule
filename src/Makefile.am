@@ -1,6 +1,6 @@
 bin_PROGRAMS  = ipc-server
 
-ipc_server_SOURCES  = ipc-server.cpp HIKCam.cpp SpeedDomeCam.cpp protocol.cpp mission.cpp mission_config.cpp 
+ipc_server_SOURCES  = ipc-server.cpp HIKCam.cpp SpeedDomeCam.cpp protocol.cpp mission.cpp mission_config.cpp CaptureDevice.cpp sql_conn.cpp 
 
 ipc_server_CPPFLAGS = -I"$(top_srcdir)/inc" \
 				-I"$(top_srcdir)/inc/incCn" \
@@ -29,4 +29,4 @@ ipc_server_LDADD    = -lhcnetsdk \
 			-lHCVoiceTalk -lanalyzedata -lHCDisplay \
 			-lboost_system -lboost_thread \
 			-lmyodbc8w -lmysqlclient \
-			-lodbc -lodbcinst -lm -ldl -lpthread
+			-lodbc -lodbcinst -lm -ldl  -lsqlite3 -lpthread

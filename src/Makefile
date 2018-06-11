@@ -102,7 +102,9 @@ PROGRAMS = $(bin_PROGRAMS)
 am_ipc_server_OBJECTS = ipc_server-ipc-server.$(OBJEXT) \
 	ipc_server-HIKCam.$(OBJEXT) ipc_server-SpeedDomeCam.$(OBJEXT) \
 	ipc_server-protocol.$(OBJEXT) ipc_server-mission.$(OBJEXT) \
-	ipc_server-mission_config.$(OBJEXT)
+	ipc_server-mission_config.$(OBJEXT) \
+	ipc_server-CaptureDevice.$(OBJEXT) \
+	ipc_server-sql_conn.$(OBJEXT)
 ipc_server_OBJECTS = $(am_ipc_server_OBJECTS)
 ipc_server_DEPENDENCIES =
 ipc_server_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
@@ -259,7 +261,7 @@ target_alias =
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-ipc_server_SOURCES = ipc-server.cpp HIKCam.cpp SpeedDomeCam.cpp protocol.cpp mission.cpp mission_config.cpp 
+ipc_server_SOURCES = ipc-server.cpp HIKCam.cpp SpeedDomeCam.cpp protocol.cpp mission.cpp mission_config.cpp CaptureDevice.cpp sql_conn.cpp 
 ipc_server_CPPFLAGS = -I"$(top_srcdir)/inc" \
 				-I"$(top_srcdir)/inc/incCn" \
 				-I"$(BUILD_ROOT_PATH)/usr/include/glib-2.0" \
@@ -287,7 +289,7 @@ ipc_server_LDADD = -lhcnetsdk \
 			-lHCVoiceTalk -lanalyzedata -lHCDisplay \
 			-lboost_system -lboost_thread \
 			-lmyodbc8w -lmysqlclient \
-			-lodbc -lodbcinst -lm -ldl -lpthread
+			-lodbc -lodbcinst -lm -ldl  -lsqlite3 -lpthread
 
 all: all-am
 
@@ -375,12 +377,14 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/ipc_server-CaptureDevice.Po
 include ./$(DEPDIR)/ipc_server-HIKCam.Po
 include ./$(DEPDIR)/ipc_server-SpeedDomeCam.Po
 include ./$(DEPDIR)/ipc_server-ipc-server.Po
 include ./$(DEPDIR)/ipc_server-mission.Po
 include ./$(DEPDIR)/ipc_server-mission_config.Po
 include ./$(DEPDIR)/ipc_server-protocol.Po
+include ./$(DEPDIR)/ipc_server-sql_conn.Po
 
 .cpp.o:
 	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -479,6 +483,34 @@ ipc_server-mission_config.obj: mission_config.cpp
 #	$(AM_V_CXX)source='mission_config.cpp' object='ipc_server-mission_config.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ipc_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ipc_server-mission_config.obj `if test -f 'mission_config.cpp'; then $(CYGPATH_W) 'mission_config.cpp'; else $(CYGPATH_W) '$(srcdir)/mission_config.cpp'; fi`
+
+ipc_server-CaptureDevice.o: CaptureDevice.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ipc_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ipc_server-CaptureDevice.o -MD -MP -MF $(DEPDIR)/ipc_server-CaptureDevice.Tpo -c -o ipc_server-CaptureDevice.o `test -f 'CaptureDevice.cpp' || echo '$(srcdir)/'`CaptureDevice.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ipc_server-CaptureDevice.Tpo $(DEPDIR)/ipc_server-CaptureDevice.Po
+#	$(AM_V_CXX)source='CaptureDevice.cpp' object='ipc_server-CaptureDevice.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ipc_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ipc_server-CaptureDevice.o `test -f 'CaptureDevice.cpp' || echo '$(srcdir)/'`CaptureDevice.cpp
+
+ipc_server-CaptureDevice.obj: CaptureDevice.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ipc_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ipc_server-CaptureDevice.obj -MD -MP -MF $(DEPDIR)/ipc_server-CaptureDevice.Tpo -c -o ipc_server-CaptureDevice.obj `if test -f 'CaptureDevice.cpp'; then $(CYGPATH_W) 'CaptureDevice.cpp'; else $(CYGPATH_W) '$(srcdir)/CaptureDevice.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ipc_server-CaptureDevice.Tpo $(DEPDIR)/ipc_server-CaptureDevice.Po
+#	$(AM_V_CXX)source='CaptureDevice.cpp' object='ipc_server-CaptureDevice.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ipc_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ipc_server-CaptureDevice.obj `if test -f 'CaptureDevice.cpp'; then $(CYGPATH_W) 'CaptureDevice.cpp'; else $(CYGPATH_W) '$(srcdir)/CaptureDevice.cpp'; fi`
+
+ipc_server-sql_conn.o: sql_conn.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ipc_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ipc_server-sql_conn.o -MD -MP -MF $(DEPDIR)/ipc_server-sql_conn.Tpo -c -o ipc_server-sql_conn.o `test -f 'sql_conn.cpp' || echo '$(srcdir)/'`sql_conn.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ipc_server-sql_conn.Tpo $(DEPDIR)/ipc_server-sql_conn.Po
+#	$(AM_V_CXX)source='sql_conn.cpp' object='ipc_server-sql_conn.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ipc_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ipc_server-sql_conn.o `test -f 'sql_conn.cpp' || echo '$(srcdir)/'`sql_conn.cpp
+
+ipc_server-sql_conn.obj: sql_conn.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ipc_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ipc_server-sql_conn.obj -MD -MP -MF $(DEPDIR)/ipc_server-sql_conn.Tpo -c -o ipc_server-sql_conn.obj `if test -f 'sql_conn.cpp'; then $(CYGPATH_W) 'sql_conn.cpp'; else $(CYGPATH_W) '$(srcdir)/sql_conn.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ipc_server-sql_conn.Tpo $(DEPDIR)/ipc_server-sql_conn.Po
+#	$(AM_V_CXX)source='sql_conn.cpp' object='ipc_server-sql_conn.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ipc_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ipc_server-sql_conn.obj `if test -f 'sql_conn.cpp'; then $(CYGPATH_W) 'sql_conn.cpp'; else $(CYGPATH_W) '$(srcdir)/sql_conn.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

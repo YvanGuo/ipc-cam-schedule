@@ -21,7 +21,7 @@ public:
     }  
 
 	int8_t loadConfig(string ConfigFile);
-  
+  	int8_t DBloadConfig(string ConfigFile);
 
 private:  
     string m_ConfigFile;

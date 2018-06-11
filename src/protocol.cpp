@@ -68,6 +68,41 @@ int32_t CProtocol::ParseLoginInfo(uint8_t    *  frameBuff, int32_t buffSize,  Lo
 	return 0;
 }
 
+int32_t CProtocol::PackageResponeFrame(char * frameBuff, RESPONE_TYPE responeType, uint8_t respone)
+{
+
+	if(NULL == frameBuff){
+
+		return -1;
+	}
+
+	memset(frameBuff, 0, 6);
+
+	
+	frameBuff[4] = responeType;//type
+	char *p = frameBuff;
+	
+	p = p+5;
+	*p = respone;
+	p++;
+
+	printf("[CProtocol::PackageLoginResponeFrame]:p - data_write = %d , %d\r\n", p - frameBuff, __LINE__);
+
+	*((uint32_t *)frameBuff) = p - frameBuff;
+
+	for(int i=0; i<p - frameBuff; i++){
+	
+		printf("[2]%d,",frameBuff[i]);
+	}
+	printf("\r\n");
+
+	return (p - frameBuff);
+	
+
+}
+
+
+
 int32_t CProtocol::PackageSnapScheduleFrame(char * frameBuff, SnapSchedule *vfs)
 {
 
@@ -79,7 +114,7 @@ int32_t CProtocol::PackageSnapScheduleFrame(char * frameBuff, SnapSchedule *vfs)
 	
 	for(int i=0; i<5; i++){
 	
-		printf("%d,",frameBuff[i]);
+		printf("[3]%d,",frameBuff[i]);
 	}
 	printf("\r\n");
 
@@ -133,6 +168,8 @@ int32_t CProtocol::PackageSnapScheduleFrame(char * frameBuff, SnapSchedule *vfs)
 	printf("p - data_write = %d , %d\r\n", p - frameBuff, __LINE__);
 
 	*((uint32_t *)frameBuff) = p - frameBuff;
+
+	printf("*((uint32_t *)frameBuff) = %d\r\n", *((uint32_t *)frameBuff), __LINE__);
 
 	return (p - frameBuff);
 	

@@ -10,6 +10,12 @@
       <brandName>HIK</brandName>
       <camNum>88</camNum>
       <productType>DS-2DF7286-A</productType>
+      <presets>
+		<preset>1</preset>
+		<preset>2</preset>
+		<preset>3</preset>
+		<preset>4</preset>
+      </presets>
     </SDC>
     <SDC>
       <IP>192.168.9.228</IP>
@@ -20,6 +26,12 @@
       <brandName>HIK</brandName>
       <camNum>89</camNum>
       <productType>DS-2DF7286-A</productType>
+      <presets>
+		<preset>1</preset>
+		<preset>2</preset>
+		<preset>3</preset>
+		<preset>4</preset>
+      </presets>
     </SDC>
     <SDC>
       <IP>192.168.9.227</IP>
@@ -30,6 +42,12 @@
       <brandName>HIK</brandName>
       <camNum>90</camNum>
       <productType>DS-2DF7286-A</productType>
+      <presets>
+		<preset>1</preset>
+		<preset>2</preset>
+		<preset>3</preset>
+		<preset>4</preset>
+      </presets>
     </SDC>
   </SDCs>
 
