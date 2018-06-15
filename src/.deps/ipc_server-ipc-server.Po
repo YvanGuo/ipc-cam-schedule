@@ -1550,8 +1550,8 @@ ipc_server-ipc-server.o: ipc-server.cpp /usr/include/stdc-predef.h \
  /usr/local/include/boost/circular_buffer/space_optimized.hpp \
  ../inc/mission.h ../inc/CaptureDevice.h ../inc/SpeedDomeCam.h \
  ../inc/HIKCam.h ../inc/HCNetSDK.h ../inc/service_pool.h \
- ../inc/config_session.h ../inc/mission_config.h \
- /usr/local/include/boost/property_tree/ptree.hpp \
+ ../inc/config_session.h ../inc/protocol_CfgClient.h \
+ ../inc/mission_config.h /usr/local/include/boost/property_tree/ptree.hpp \
  /usr/local/include/boost/property_tree/ptree_fwd.hpp \
  /usr/local/include/boost/optional/optional_fwd.hpp \
  /usr/local/include/boost/property_tree/string_path.hpp \
@@ -5037,6 +5037,8 @@ ipc_server-ipc-server.o: ipc-server.cpp /usr/include/stdc-predef.h \
 ../inc/service_pool.h:
 
 ../inc/config_session.h:
+
+../inc/protocol_CfgClient.h:
 
 ../inc/mission_config.h:
 

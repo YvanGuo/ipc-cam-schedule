@@ -104,7 +104,8 @@ am_ipc_server_OBJECTS = ipc_server-ipc-server.$(OBJEXT) \
 	ipc_server-protocol.$(OBJEXT) ipc_server-mission.$(OBJEXT) \
 	ipc_server-mission_config.$(OBJEXT) \
 	ipc_server-CaptureDevice.$(OBJEXT) \
-	ipc_server-sql_conn.$(OBJEXT)
+	ipc_server-sql_conn.$(OBJEXT) \
+	ipc_server-protocol_CfgClient.$(OBJEXT)
 ipc_server_OBJECTS = $(am_ipc_server_OBJECTS)
 ipc_server_DEPENDENCIES =
 ipc_server_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
@@ -261,7 +262,7 @@ target_alias =
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-ipc_server_SOURCES = ipc-server.cpp HIKCam.cpp SpeedDomeCam.cpp protocol.cpp mission.cpp mission_config.cpp CaptureDevice.cpp sql_conn.cpp 
+ipc_server_SOURCES = ipc-server.cpp HIKCam.cpp SpeedDomeCam.cpp protocol.cpp mission.cpp mission_config.cpp CaptureDevice.cpp sql_conn.cpp protocol_CfgClient.cpp 
 ipc_server_CPPFLAGS = -I"$(top_srcdir)/inc" \
 				-I"$(top_srcdir)/inc/incCn" \
 				-I"$(BUILD_ROOT_PATH)/usr/include/glib-2.0" \
@@ -384,6 +385,7 @@ include ./$(DEPDIR)/ipc_server-ipc-server.Po
 include ./$(DEPDIR)/ipc_server-mission.Po
 include ./$(DEPDIR)/ipc_server-mission_config.Po
 include ./$(DEPDIR)/ipc_server-protocol.Po
+include ./$(DEPDIR)/ipc_server-protocol_CfgClient.Po
 include ./$(DEPDIR)/ipc_server-sql_conn.Po
 
 .cpp.o:
@@ -511,6 +513,20 @@ ipc_server-sql_conn.obj: sql_conn.cpp
 #	$(AM_V_CXX)source='sql_conn.cpp' object='ipc_server-sql_conn.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ipc_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ipc_server-sql_conn.obj `if test -f 'sql_conn.cpp'; then $(CYGPATH_W) 'sql_conn.cpp'; else $(CYGPATH_W) '$(srcdir)/sql_conn.cpp'; fi`
+
+ipc_server-protocol_CfgClient.o: protocol_CfgClient.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ipc_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ipc_server-protocol_CfgClient.o -MD -MP -MF $(DEPDIR)/ipc_server-protocol_CfgClient.Tpo -c -o ipc_server-protocol_CfgClient.o `test -f 'protocol_CfgClient.cpp' || echo '$(srcdir)/'`protocol_CfgClient.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ipc_server-protocol_CfgClient.Tpo $(DEPDIR)/ipc_server-protocol_CfgClient.Po
+#	$(AM_V_CXX)source='protocol_CfgClient.cpp' object='ipc_server-protocol_CfgClient.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ipc_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ipc_server-protocol_CfgClient.o `test -f 'protocol_CfgClient.cpp' || echo '$(srcdir)/'`protocol_CfgClient.cpp
+
+ipc_server-protocol_CfgClient.obj: protocol_CfgClient.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ipc_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ipc_server-protocol_CfgClient.obj -MD -MP -MF $(DEPDIR)/ipc_server-protocol_CfgClient.Tpo -c -o ipc_server-protocol_CfgClient.obj `if test -f 'protocol_CfgClient.cpp'; then $(CYGPATH_W) 'protocol_CfgClient.cpp'; else $(CYGPATH_W) '$(srcdir)/protocol_CfgClient.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ipc_server-protocol_CfgClient.Tpo $(DEPDIR)/ipc_server-protocol_CfgClient.Po
+#	$(AM_V_CXX)source='protocol_CfgClient.cpp' object='ipc_server-protocol_CfgClient.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ipc_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ipc_server-protocol_CfgClient.obj `if test -f 'protocol_CfgClient.cpp'; then $(CYGPATH_W) 'protocol_CfgClient.cpp'; else $(CYGPATH_W) '$(srcdir)/protocol_CfgClient.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

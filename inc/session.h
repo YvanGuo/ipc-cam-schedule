@@ -114,18 +114,18 @@ public:
 					printf("erro capDev.SpdDomeCam = NULL\r\n");
 				}
 
-				printf("[session::showCfg];SpdDomeCam[%d]: m_usrName = %s\r\n",  0, capDev.SpdDomeCam->m_usrName.c_str());
-				printf("[session::showCfg];SpdDomeCam[%d]: m_pwd = %s\r\n",  0, capDev.SpdDomeCam->m_pwd.c_str());
-				printf("[session::showCfg];SpdDomeCam[%d]: m_IP = %s\r\n",  0, capDev.SpdDomeCam->m_IP.c_str());
-				printf("[session::showCfg];SpdDomeCam[%d]: m_port = %d\r\n",  0, capDev.SpdDomeCam->m_port);
-				printf("[session::showCfg];SpdDomeCam[%d]: RTSPaddr = %s\r\n",  0, capDev.SpdDomeCam->RTSPaddr.c_str());
-				printf("[session::showCfg];SpdDomeCam[%d]: camNum = %s\r\n",  0, capDev.SpdDomeCam->camNum.c_str());
-				printf("[session::showCfg];SpdDomeCam[%d]: productType = %s\r\n",  0, capDev.SpdDomeCam->productType.c_str());
-				printf("[session::showCfg];SpdDomeCam[%d]: brandName = %s\r\n",  0, capDev.SpdDomeCam->brandName.c_str());
+				printf("[session::showCfg];SpdDomeCam[%d]: m_usrName = %s\r\n",  0, capDev.SpdDomeCam->m_sdcCfg.m_usrName.c_str());
+				printf("[session::showCfg];SpdDomeCam[%d]: m_pwd = %s\r\n",  0, capDev.SpdDomeCam->m_sdcCfg.m_pwd.c_str());
+				printf("[session::showCfg];SpdDomeCam[%d]: m_IP = %s\r\n",  0, capDev.SpdDomeCam->m_sdcCfg.IP.c_str());
+				printf("[session::showCfg];SpdDomeCam[%d]: m_port = %d\r\n",  0, capDev.SpdDomeCam->m_sdcCfg.port);
+				printf("[session::showCfg];SpdDomeCam[%d]: RTSPaddr = %s\r\n",  0, capDev.SpdDomeCam->m_sdcCfg.RTSPaddr.c_str());
+				printf("[session::showCfg];SpdDomeCam[%d]: camNum = %s\r\n",  0, capDev.SpdDomeCam->m_sdcCfg.camNum.c_str());
+				printf("[session::showCfg];SpdDomeCam[%d]: productType = %s\r\n",  0, capDev.SpdDomeCam->m_sdcCfg.productType.c_str());
+				printf("[session::showCfg];SpdDomeCam[%d]: brandName = %s\r\n",  0, capDev.SpdDomeCam->m_sdcCfg.brandName.c_str());
 				
 				for(int j=0; j<capDev.SpdDomeCam->totalPTZpreset; j++){
 			
-					printf("[CMission::showCfg];SpdDomeCam[%d]: missionPreset[%d] = %d\r\n",  0, j, capDev.SpdDomeCam->missionPreset[j].presetNum);
+					printf("[CMission::showCfg];SpdDomeCam[%d]: missionPreset[%d] = %d\r\n",  0, j, capDev.SpdDomeCam->m_sdcCfg.missionPreset[j].presetNum);
 				}
 				
 
@@ -136,6 +136,10 @@ public:
 				printf("[session::showCfg];capDev[%d]: MAC = %s\r\n",	0, capDev.MAC.c_str());
 
 				capDev.start();
+				capDev.isOnline = 1;
+				
+				mission->updateCapdev(&capDev);
+				//MissionAdd(mission);
 
 				int32_t frameLen = protocol.PackageResponeFrame(data_write, LOGIN_RESP, 1);
 				printf("frameLen = %d\r\n", frameLen);
@@ -192,13 +196,14 @@ public:
 
 					capDev.SpdDomeCam = mission->getFreeSDC();
 					capDev.missionStatus = MISSION_READY;
+					mission->updateCapdev(&capDev);
 					
 					if(NULL == capDev.SpdDomeCam){
 	
 						printf("erro capDev.SpdDomeCam = NULL\r\n");
 					}
 
-					printf("start chg mission cur SpdDomeCam is %s................................................\r\n", capDev.SpdDomeCam->camNum.c_str());
+					printf("start chg mission cur SpdDomeCam is %s................................................\r\n", capDev.SpdDomeCam->m_sdcCfg.camNum.c_str());
 
 				}
 				

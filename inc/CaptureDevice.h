@@ -33,6 +33,7 @@ public:
 		isOnline = 0;
 		missionStatus = MISSION_READY;
 		memset(&loginInfo, 0, sizeof(LoginInfo));
+		//memset(&m_sdcCfg, 0, sizeof(SDCcfg));
 
 	}
 	
@@ -60,7 +61,9 @@ public:
 	string MAC;
 	string devNum;
 	string devName;
-
+	string curCamNum;
+//	SDCcfg m_sdcCfg;
+	
 	boost::shared_ptr<CSpeedDomeCam> SpdDomeCam;
 		
 	boost::shared_ptr<boost::asio::deadline_timer> timer;

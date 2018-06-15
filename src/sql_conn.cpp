@@ -30,31 +30,32 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName){
 			//printf("[sql callback]: SDCs\n");
 			if("missionID" == sColName){
 
-				G_SDC.missionNum = boost::lexical_cast<int32_t>(sColVal);
+				G_SDC.m_sdcCfg.missionNum = boost::lexical_cast<int32_t>(sColVal);
+				//printf("");
 			}else if("camNum" == sColName){
 
-				G_SDC.camNum = sColVal;
+				G_SDC.m_sdcCfg.camNum = sColVal;
 			 }else if("IP" == sColName){
 
-				G_SDC.m_IP = sColVal;
+				G_SDC.m_sdcCfg.IP = sColVal;
 			 }else if("port" == sColName){
 
-				G_SDC.m_port = boost::lexical_cast<int32_t>(sColVal);
+				G_SDC.m_sdcCfg.port = boost::lexical_cast<int32_t>(sColVal);
 			 }else if("usrName" == sColName){
 
-				G_SDC.m_usrName = sColVal;
+				G_SDC.m_sdcCfg.m_usrName = sColVal;
 			 }else if("pwd" == sColName){
 
-				G_SDC.m_pwd = sColVal;
+				G_SDC.m_sdcCfg.m_pwd = sColVal;
 			 }else if("RTSPaddr" == sColName){
 
-				G_SDC.RTSPaddr = sColVal;
+				G_SDC.m_sdcCfg.RTSPaddr = sColVal;
 			 }else if("brandName" == sColName){
 
-				G_SDC.brandName = sColVal;
+				G_SDC.m_sdcCfg.brandName = sColVal;
 			 }else if("productType" == sColName){
 
-				G_SDC.productType = sColVal;
+				G_SDC.m_sdcCfg.productType = sColVal;
 			 }else if("presetNum" == sColName){
 
 				G_SDC.presetTableID = boost::lexical_cast<int32_t>(sColVal);
@@ -72,10 +73,12 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName){
 			 if("ID" == sColName){
 
 				G_mission.missionNum = boost::lexical_cast<int32_t>(sColVal);
+				printf("[sql callback]: missions OK1\n");
 				MissionAdd(&G_mission);
+				//G_MissionMap.insert(pair<int, CMission>(G_mission.missionNum, G_mission)); 
 			 }
 
-			 
+			 printf("[sql callback]: missions OK2\n");
 			 
 		}else if("capDevs" == *tableName){
 
