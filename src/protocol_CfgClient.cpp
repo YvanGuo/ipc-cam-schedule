@@ -109,13 +109,44 @@ int32_t CProtocolClientCfg::ParseFrameHead(uint8_t * frameBuff, int32_t buffSize
 
 }
 
-
-int32_t CProtocolClientCfg::ParseSDCcfgInfo(uint8_t * frameBuff, int32_t buffSize, SDCcfg * sdcCfg)
+int32_t CProtocolClientCfg::ParseAddGroupReq(uint8_t * frameBuff, int32_t buffSize, int32_t *missionNum)
 {
-	ProtocolClientCfgHead head;
 
 	int magicPos = FindMagic(frameBuff, buffSize);
 	uint8_t *p = frameBuff + magicPos + 5;
+	ProtocolClientCfgHead head;
+
+	head.type = *p;
+	p++;
+
+	int version = *p;
+	head.version = boost::lexical_cast<string>(version);
+	head.version += ".";
+	p++;
+	version = *p;
+	head.version += boost::lexical_cast<string>(version);
+	head.version += ".";
+	p++;
+	version = *p;
+	head.version += boost::lexical_cast<string>(version);
+	p++;
+
+	head.frameSize = *((uint32_t *)(p));
+	p += sizeof(uint32_t);
+
+	*missionNum = *((uint32_t *)(p));
+	p += sizeof(uint32_t);
+
+	return p-frameBuff;
+}
+
+
+int32_t CProtocolClientCfg::ParseChangeGroupReq(uint8_t * frameBuff, int32_t buffSize, missionGroupChgReq &req)
+{
+
+	int magicPos = FindMagic(frameBuff, buffSize);
+	uint8_t *p = frameBuff + magicPos + 5;
+	ProtocolClientCfgHead head;
 
 	head.type = *p;
 	p++;
@@ -135,8 +166,17 @@ int32_t CProtocolClientCfg::ParseSDCcfgInfo(uint8_t * frameBuff, int32_t buffSiz
 	printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.version = %s. *p = %d\r\n", head.version.c_str(), *p );
 	p++;
 
-	sdcCfg->mode = *p; //巡航模式
+	head.frameSize = *((uint32_t *)(p));
+	p += sizeof(uint32_t);
+
+	req.type = *p;
 	p++;
+
+	req.ori_num = *((uint32_t *)(p));
+	p += sizeof(uint32_t);
+
+	req.dts_num = *((uint32_t *)(p));
+	p += sizeof(uint32_t);
 
 	int tmpLen = 0;
 	char tmp[256];
@@ -145,11 +185,50 @@ int32_t CProtocolClientCfg::ParseSDCcfgInfo(uint8_t * frameBuff, int32_t buffSiz
 	p++;
 	memset(tmp, 0, 256);
 	memcpy(tmp, p, MIN(tmpLen,256));
+	req.num = tmp;
+	p += tmpLen;
+
+}
+
+
+int32_t CProtocolClientCfg::ParseSDCcfgInfo(uint8_t * frameBuff, int32_t buffSize, SDCcfg * sdcCfg)
+{
+	ProtocolClientCfgHead head;
+
+	int magicPos = FindMagic(frameBuff, buffSize);
+	uint8_t *p = frameBuff + magicPos + 5;
+
+	head.type = *p;
+	p++;
+
+	int version = *p;
+	head.version = boost::lexical_cast<string>(version);
+	head.version += ".";
+	//printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.version = %s. *p = %d\r\n", head.version.c_str(), *p );
+	p++;
+	version = *p;
+	head.version += boost::lexical_cast<string>(version);
+	head.version += ".";
+	//printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.version = %s. *p = %d\r\n", head.version.c_str(), *p );
+	p++;
+	version = *p;
+	head.version += boost::lexical_cast<string>(version);
+	//printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.version = %s. *p = %d\r\n", head.version.c_str(), *p );
+	p++;
+
+	sdcCfg->mode = *p; //巡航模式
+	p++;
+
+	int tmpLen = 0;
+	char tmp[256];
+	tmpLen = *p;
+	p++;
+	memset(tmp, 0, 256);
+	memcpy(tmp, p, MIN(tmpLen,256));
 	sdcCfg->IP = tmp;
 	p += tmpLen;
 
 	tmpLen = *p;
-	printf("tmpLen = %d, line: %d\r\n", tmpLen, __LINE__);
 	p++;
 	memset(tmp, 0, 256);
 	memcpy(tmp, p, MIN(tmpLen,256));
@@ -157,7 +236,6 @@ int32_t CProtocolClientCfg::ParseSDCcfgInfo(uint8_t * frameBuff, int32_t buffSiz
 	p += tmpLen;
 
 	tmpLen = *p;
-	printf("tmpLen = %d, line: %d\r\n", tmpLen, __LINE__);
 	p++;
 	memset(tmp, 0, 256);
 	memcpy(tmp, p, MIN(tmpLen,256));
@@ -165,7 +243,6 @@ int32_t CProtocolClientCfg::ParseSDCcfgInfo(uint8_t * frameBuff, int32_t buffSiz
 	p += tmpLen;
 	
 	tmpLen = *p;
-	printf("tmpLen = %d, line: %d\r\n", tmpLen, __LINE__);
 	p++;
 	memset(tmp, 0, 256);
 	memcpy(tmp, p, MIN(tmpLen,256));
@@ -174,7 +251,6 @@ int32_t CProtocolClientCfg::ParseSDCcfgInfo(uint8_t * frameBuff, int32_t buffSiz
 
 	tmpLen = *p;
 	p++;
-	printf("tmpLen = %d, line: %d\r\n", tmpLen, __LINE__);
 	memset(tmp, 0, 256);
 	memcpy(tmp, p, MIN(tmpLen,256));
 	sdcCfg->brandName = tmp;
@@ -182,7 +258,6 @@ int32_t CProtocolClientCfg::ParseSDCcfgInfo(uint8_t * frameBuff, int32_t buffSiz
 
 	tmpLen = *p;
 	p++;
-	printf("tmpLen = %d, line: %d\r\n", tmpLen, __LINE__);
 	memset(tmp, 0, 256);
 	memcpy(tmp, p, MIN(tmpLen,256));
 	sdcCfg->productType = tmp;
@@ -196,7 +271,6 @@ int32_t CProtocolClientCfg::ParseSDCcfgInfo(uint8_t * frameBuff, int32_t buffSiz
 	p += sizeof(unsigned int);
 
 	tmpLen = *p;
-	printf("tmpLen = %d, line: %d\r\n", tmpLen, __LINE__);
 	p++;
 	memset(tmp, 0, 256);
 	memcpy(tmp, p, MIN(tmpLen,256));
@@ -204,21 +278,45 @@ int32_t CProtocolClientCfg::ParseSDCcfgInfo(uint8_t * frameBuff, int32_t buffSiz
 	p += tmpLen;
 
 	sdcCfg->missionNum = (*(unsigned int *)(p));
+	p += sizeof(unsigned int);
+
+	sdcCfg->presetTotal = *p;
+	p++;
+
+	for (int i = 0; i < sdcCfg->presetTotal; i++) {
+
+		sdcCfg->missionPreset[i].presetNum = (*(unsigned int *)(p));
+		p += sizeof(unsigned int);		
+
+		printf("sdcCfg->missionPreset[i].presetNum = %d\r\n", sdcCfg->missionPreset[i].presetNum);
+		sdcCfg->missionPreset[i].holdSeconds = (*(unsigned int *)(p));
+		p += sizeof(unsigned int);
+		
+		printf("sdcCfg->missionPreset[i].holdSeconds  = %d\r\n", sdcCfg->missionPreset[i].holdSeconds );
+		sdcCfg->missionPreset[i].mode = (*(unsigned int *)(p));
+		p += sizeof(unsigned int);
+
+		sdcCfg->missionPreset[i].priority = (*(unsigned int *)(p));
+		p += sizeof(unsigned int);
+
+		sdcCfg->missionPreset[i].plateMinWidth = (*(unsigned int *)(p));
+		p += sizeof(unsigned int);
+
+		sdcCfg->missionPreset[i].plateMaxWidth = (*(unsigned int *)(p));
+		p += sizeof(unsigned int);
+
+		memcpy(&sdcCfg->missionPreset[i].illparkpara, p, sizeof(IllegalParkParam));
+		p += sizeof(IllegalParkParam);
+		memcpy(&sdcCfg->missionPreset[i].rect, p, sizeof(RECT));
+		p += sizeof(RECT);
+		
+		printf("sdcCfg->missionPreset[i].illparkpara.Area1[0].x  = %d\r\n",sdcCfg->missionPreset[i].illparkpara.Area1[0].x);
+		printf("sdcCfg->missionPreset[i].illparkpara.Area1[0].y  = %d\r\n",sdcCfg->missionPreset[i].illparkpara.Area1[0].y);
+
+	}
+
 	
-	printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.type = %d\r\n", head.type);
-	printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.version = %s\r\n", head.version.c_str());
-	printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.mode = %d\r\n", sdcCfg->mode);
-	printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.RTSPaddr = %s\r\n", sdcCfg->RTSPaddr.c_str());
-	printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.BrandName = %s\r\n", sdcCfg->brandName.c_str());
-	printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.productType = %s\r\n", sdcCfg->productType.c_str());
-	printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.IP = %s\r\n", sdcCfg->IP.c_str());
-	printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.usrname = %s\r\n", sdcCfg->m_usrName.c_str());
-	printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.pwd = %s\r\n", sdcCfg->m_pwd.c_str());
-	printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.camNum = %s\r\n", sdcCfg->camNum.c_str());
-	printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.missionID = %d\r\n", sdcCfg->missionNum);
-	printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.plateMinWidth = %d\r\n", sdcCfg->plateMinWidth);
-	printf("[CProtocolClientCfg::ParseSDCcfgInfo]: head.plateMaxWidth = %d\r\n", sdcCfg->plateMaxWidth);
-	
+
 
 }
 
@@ -252,6 +350,7 @@ int32_t CProtocolClientCfg::packageSDCrespone(int8_t * buff, int32_t buffLen, in
 	}
 
 	int8_t *p = buff;
+	uint32_t *frameLen = NULL;
 
 
 	(*(int32_t *)(p)) = htonl(MAGIC); //头
@@ -267,11 +366,16 @@ int32_t CProtocolClientCfg::packageSDCrespone(int8_t * buff, int32_t buffLen, in
 	*p = 0;
 	p++;
 
+	frameLen = (uint32_t *)(p);
+	p += sizeof(uint32_t);
+
 	*p = 1;
 	p++;
-	
+
 	*(int16_t *)p = htons(Crc16(buff, p-buff)); //从magic到CRC前一位的所有数据的CRC
 	p += sizeof(int16_t);
+
+	*frameLen = p-buff;
 
 	return p-buff;
 }
@@ -355,7 +459,7 @@ int32_t CProtocolClientCfg::packageSDCinfo(int8_t * buff, uint32_t buffLen, SDCc
 	(*(uint32_t *)(p)) = sdcCfg->missionNum;
 	p += sizeof(uint32_t);
 
-	printf(" sdcCfg->camNum.c_str() = %s, missionNum = %d\r\n",	sdcCfg->camNum.c_str(), sdcCfg->missionNum);
+	//printf(" sdcCfg->camNum.c_str() = %s, missionNum = %d\r\n",	sdcCfg->camNum.c_str(), sdcCfg->missionNum);
 	
 
 	*p = sdcCfg->presetTotal;
@@ -366,7 +470,6 @@ int32_t CProtocolClientCfg::packageSDCinfo(int8_t * buff, uint32_t buffLen, SDCc
 		memcpy(p, &sdcCfg->missionPreset[i], sizeof(Preset));
 		p += sizeof(Preset);
 	}
-	
 	(*(uint16_t *)p) = htons(Crc16(buff, p-(char *)buff)); //从magic到CRC前一位的所有数据的CRC
 	p += sizeof(unsigned short);
 
@@ -440,10 +543,11 @@ int32_t CProtocolClientCfg::packageCapDevinfo(int8_t * buff, uint32_t buffLen, C
 	p++;
 	strncpy(p, capDev->curCamNum.c_str(), capDev->curCamNum.length());
 	p += capDev->curCamNum.length();
-	printf("$$$$$$$$$$$$$$$$$$$$$$$[packageCapDevinfo]:capDev->curCamNum = %s __ line %d\r\n", capDev->curCamNum.c_str(), __LINE__);
 	//(*(uint32_t *)(p)) = boost::lexical_cast<uint32_t>(capDev->curCamNum);
 	
 	(*(uint32_t *)(p)) = capDev->missionNum;
+	
+	//printf("$$$$$$$$$$$$$$$$$$$$$$$[packageCapDevinfo]:capDev->curCamNum = %s, missionNum = %d __ line %d\r\n", capDev->curCamNum.c_str(),(*(uint32_t *)(p)), __LINE__);
 	p += sizeof(uint32_t);
 
 	*p = capDev->isOnline;
@@ -457,6 +561,43 @@ int32_t CProtocolClientCfg::packageCapDevinfo(int8_t * buff, uint32_t buffLen, C
 	return *frameLen;
 }
 
+int32_t CProtocolClientCfg::packageGroupInfo(int8_t * buff, int32_t buffLen, int8_t groupNum)
+{
+	if (NULL == buff || buffLen < 0) {
+
+		return -1;
+	}
+
+	int8_t *p = buff;
+
+	uint32_t *frameLen = NULL;
+
+	(*(int32_t *)(p)) = htonl(MAGIC); //头
+	p += sizeof(int32_t);
+
+	*p = 9;  //type
+	p++;
+
+	*p = 1; //版本号 1.0.0
+	p++;
+	*p = 0;
+	p++;
+	*p = 0;
+	p++;
+
+	frameLen = (uint32_t *)(p);
+	p += sizeof(uint32_t);
+
+	(*(int32_t *)(p)) = groupNum;
+	p += sizeof(int32_t);
+
+	*(int16_t *)p = htons(Crc16(buff, p - buff)); //从magic到CRC前一位的所有数据的CRC
+	p += sizeof(int16_t);
+
+	*frameLen = p - buff;
+
+	return p - buff;
+}
 
 uint64_t CProtocolClientCfg::reversebytes_uint64t(uint64_t value)
 {  
@@ -480,3 +621,4 @@ uint16_t CProtocolClientCfg:: reversebytes_uint16t(uint16_t value)
 
 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                               

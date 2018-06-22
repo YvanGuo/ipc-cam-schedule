@@ -1553,8 +1553,8 @@ ipc_server-mission.o: mission.cpp /usr/include/stdc-predef.h \
  /usr/local/include/boost/thread/executors/generic_executor_ref.hpp \
  /usr/local/include/boost/thread/detail/atomic_undef_macros.hpp \
  /usr/local/include/boost/thread/detail/atomic_redef_macros.hpp \
- ../inc/HIKCam.h ../inc/HCNetSDK.h ../inc/mission_config.h \
- /usr/local/include/boost/property_tree/ptree.hpp \
+ ../inc/HIKCam.h ../inc/HCNetSDK.h ../inc/protocol_CfgClient.h \
+ ../inc/mission_config.h /usr/local/include/boost/property_tree/ptree.hpp \
  /usr/local/include/boost/property_tree/ptree_fwd.hpp \
  /usr/local/include/boost/optional/optional_fwd.hpp \
  /usr/local/include/boost/property_tree/string_path.hpp \
@@ -5012,6 +5012,8 @@ ipc_server-mission.o: mission.cpp /usr/include/stdc-predef.h \
 ../inc/HIKCam.h:
 
 ../inc/HCNetSDK.h:
+
+../inc/protocol_CfgClient.h:
 
 ../inc/mission_config.h:
 

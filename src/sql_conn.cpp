@@ -2,12 +2,10 @@
 #include <boost/typeof/typeof.hpp>  
 #include <boost/lexical_cast.hpp>
 #include "mission.h"
-#include "CaptureDevice.h"
-
-#include "SpeedDomeCam.h"
-
 
 static CMission G_mission;
+CMission G_missionUnstart ;
+
 static CCaptureDevice G_capdev;
 static CSpeedDomeCam G_SDC;
 static Preset G_preset;
@@ -61,7 +59,13 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName){
 				G_SDC.presetTableID = boost::lexical_cast<int32_t>(sColVal);
 
 				printf("presetNum add G_mission.addSDC(&G_SDC) \r\n");
-				G_mission.addSDC(&G_SDC);
+				//G_mission.addSDC(&G_SDC);
+				
+				if(-1 == MissionAddSDC(&G_SDC)){
+
+					G_SDC.m_sdcCfg.missionNum = -1;
+					G_missionUnstart.addSDC(&G_SDC);
+				}
 			 }
 
 			 
@@ -107,7 +111,13 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName){
 				G_capdev.devName = sColVal;
 
 			 	printf("devName add G_mission.addCapDev(&G_capdev) \r\n");
-				G_mission.addCapDev(&G_capdev);
+				//G_mission.addCapDev(&G_capdev);
+				
+				if(-1 == MissionAddCapDev(&G_capdev)){
+
+					G_capdev.missionNum = -1;
+					G_missionUnstart.addCapDev(&G_capdev);
+				}
 			 }
 
 			
@@ -278,9 +288,9 @@ int8_t CSQL_conn::createTable()
 	}else{
 	  fprintf(stdout, "Table created TABLE capDevs successfully\n");
 	}
+	//CREATE TABLE preset(num INT NOT NULL,SDC_ID INT NOT NULL,holdSeconds INT NOT NULL,mode INT NOT NULL,priority INT NOT NULL);
 
 	sql = "CREATE TABLE preset("  \
-     "ID INT PRIMARY KEY     NOT NULL," \
      "num           INT    NOT NULL," \
      "SDC_ID           INT    NOT NULL," \
      "holdSeconds           INT    NOT NULL," \
@@ -365,6 +375,226 @@ int8_t CSQL_conn::insert()
 
    return 0;
 }
+
+int8_t CSQL_conn::insert(SDCcfg *sdc)
+{
+ 
+   char *zErrMsg = 0;
+   int rc;
+   char sql[1024];
+
+
+	sprintf(sql, "INSERT INTO SDCs (camNum,missionID,IP,port,usrName,pwd,RTSPaddr,brandName,productType,presetNum) "  \
+			"VALUES (%s, %d, '%s', %d, '%s', '%s', '%s', '%s', '%s', %d); " ,\
+			sdc->camNum.c_str(), sdc->missionNum, sdc->IP.c_str(),\
+			sdc->port, sdc->m_usrName.c_str(), sdc->m_pwd.c_str(), sdc->RTSPaddr.c_str(),\
+			sdc->brandName.c_str(), sdc->productType.c_str(), sdc->presetTotal);
+	printf("[SQL_conn::insertSDC]: %s\r\n", sql);
+	  /* Execute SQL statement */
+	rc = sqlite3_exec(handle, sql, callback, 0, &zErrMsg);
+	if( rc != SQLITE_OK ){
+	 fprintf(stderr, "[insert]:SQL insertSDC error: %s\n", zErrMsg);
+	 sqlite3_free(zErrMsg);
+	}else{
+	 fprintf(stdout, "INSERT SDCs successfully\n");
+	}
+
+
+	typedef struct Preset{
+	
+		string camNum;
+		uint32_t presetNum;
+		uint32_t holdSeconds;
+		uint32_t mode;
+		uint32_t priority;
+		uint32_t plateMinWidth;
+		uint32_t plateMaxWidth;
+		IllegalParkParam illparkpara;
+		RECT rect;
+	}Preset;
+	
+
+	for(int i=0; i<sdc->presetTotal; i++){
+
+
+		sprintf(sql, "INSERT INTO preset (num,SDC_ID,holdSeconds,mode,priority,plateMinWidth,plateMaxWidth,nNum1,nNum1,Area1x,Area1y,Area2x,Area2y,fScaleScreen,rectLeft,,rectRight,rectBottom,rectTop) "  \
+         "VALUES (%d,%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d); ", sdc->missionPreset[i].presetNum \
+         , sdc->camNum.c_str(), sdc->missionPreset[i].holdSeconds,\
+         sdc->missionPreset[i].mode, sdc->missionPreset[i].priority,sdc->missionPreset[i].plateMinWidth,\
+         sdc->missionPreset[i].plateMaxWidth, sdc->missionPreset[i].illparkpara.Area1[0].x,\
+         sdc->missionPreset[i].illparkpara.Area1[0].y,sdc->missionPreset[i].illparkpara.Area2[0].x,\
+         sdc->missionPreset[i].illparkpara.Area2[0].y,sdc->missionPreset[i].illparkpara.fScaleScreen,\
+         sdc->missionPreset[i].rect.left,sdc->missionPreset[i].rect.right,\
+         sdc->missionPreset[i].rect.bottom, sdc->missionPreset[i].rect.top);
+		printf("[SQL_conn::insertSDC]: %s\r\n", sql);
+	   /* Execute SQL statement */
+	   rc = sqlite3_exec(handle, sql, callback, 0, &zErrMsg);
+	   if( rc != SQLITE_OK ){
+	      fprintf(stderr, "[insert]:SQL preset error: %s\n", zErrMsg);
+	      sqlite3_free(zErrMsg);
+	   }else{
+	      fprintf(stdout, "INSERT SDCs preset successfully\n");
+	   }
+
+	}
+
+   return 0;
+}
+
+
+int8_t CSQL_conn::insert(CCaptureDevice *capdev)
+{
+ 
+	char *zErrMsg = 0;
+	int rc;
+	char sql[1024];
+
+	sprintf(sql, "INSERT INTO capDevs (devNum,missionID,IP,devType,MAC,devName) "  \
+		"VALUES ('%s', %d, '%s', '%s', '%s', '%s'); ",\
+		capdev->devNum.c_str() , capdev->missionNum, capdev->IP.c_str(), capdev->devType.c_str(),\
+		capdev->MAC.c_str(), capdev->devName.c_str());
+	/* Execute SQL statement */
+	rc = sqlite3_exec(handle, sql, callback, 0, &zErrMsg);
+	if( rc != SQLITE_OK ){
+		
+	 	 fprintf(stderr, "[insert]:SQL CaptureDevice error: %s\n", zErrMsg);
+		 sqlite3_free(zErrMsg);
+	
+	}else{
+		
+	 	 fprintf(stdout, "INSERT CaptureDevice successfully\n");
+	}
+
+
+   return 0;
+}
+
+int8_t CSQL_conn::insert(CMission *mis)
+{
+ 
+	char *zErrMsg = 0;
+	int rc;
+	char sql[1024];
+
+	sprintf(sql, "INSERT INTO missions (ID,SDC_ID,capDevID) "  \
+		"VALUES (%d, 0, 0); ",\
+		mis->missionNum );
+	/* Execute SQL statement */
+	rc = sqlite3_exec(handle, sql, callback, 0, &zErrMsg);
+	if( rc != SQLITE_OK ){
+		
+	 	 fprintf(stderr, "[insert]:SQL mission error: %s\n", zErrMsg);
+		 sqlite3_free(zErrMsg);
+	
+	}else{
+		
+	 	 fprintf(stdout, "INSERT mission successfully\n");
+	}
+
+
+   return 0;
+}
+
+int8_t CSQL_conn::update(CCaptureDevice *capdev)
+{
+ 
+	char *zErrMsg = 0;
+	int rc;
+	char sql[1024];
+
+	sprintf(sql, "UPDATE capDevs SET missionID=%d,IP='%s',devType='%s',MAC='%s',devName='%s' "  \
+		"where devNum='%s';",\
+		capdev->missionNum, capdev->IP.c_str(), capdev->devType.c_str(),\
+		capdev->MAC.c_str(), capdev->devName.c_str(), capdev->devNum.c_str());
+	/* Execute SQL statement */
+	rc = sqlite3_exec(handle, sql, callback, 0, &zErrMsg);
+	if( rc != SQLITE_OK ){
+		
+	 	 fprintf(stderr, "[update]:SQL update CaptureDevice error: %s\n", zErrMsg);
+		 sqlite3_free(zErrMsg);
+	
+	}else{
+		
+	 	 fprintf(stdout, "update CaptureDevice successfully\n");
+	}
+	
+
+
+   return 0;
+}
+
+int8_t CSQL_conn::update(SDCcfg *sdc)
+{
+
+	char *zErrMsg = 0;
+	int rc;
+	char sql[1024];
+
+
+	 sprintf(sql, "UPDATE SDCs SET missionID=%d,IP='%s',port=%d,usrName='%s',pwd='%s',RTSPaddr='%s',brandName='%s',productType='%s',presetNum=%d "  \
+			 "WHERE camNum='%s'; " ,\
+			 sdc->missionNum, sdc->IP.c_str(),\
+			 sdc->port, sdc->m_usrName.c_str(), sdc->m_pwd.c_str(), sdc->RTSPaddr.c_str(),\
+			 sdc->brandName.c_str(), sdc->productType.c_str(), sdc->presetTotal,sdc->camNum.c_str());
+	 printf("[SQL_conn::UPDATE]: %s\r\n", sql);
+	   /* Execute SQL statement */
+	 rc = sqlite3_exec(handle, sql, callback, 0, &zErrMsg);
+	 if( rc != SQLITE_OK ){
+		fprintf(stderr, "[UPDATE]:SQL insertSDC error: %s\n", zErrMsg);
+		sqlite3_free(zErrMsg);
+	 }else{
+		fprintf(stdout, "UPDATE SDCs successfully\n");
+	 }
+
+	 for(int i=0; i<sdc->presetTotal; i++){
+	 
+	 
+		 sprintf(sql, "UPDATE preset holdSeconds=%d,mode=%d,priority=%d "	\
+		  "WHERE SDC_ID=%s and num=%d;", \
+		  sdc->missionPreset[i].holdSeconds,\
+		  sdc->missionPreset[i].mode, sdc->missionPreset[i].priority,\
+		  sdc->camNum.c_str(), sdc->missionPreset[i].presetNum);
+		 printf("[SQL_conn::UPDATE]: %s\r\n", sql);
+		/* Execute SQL statement */
+		rc = sqlite3_exec(handle, sql, callback, 0, &zErrMsg);
+		if( rc != SQLITE_OK ){
+		   fprintf(stderr, "[UPDATE]:SQL preset error: %s\n", zErrMsg);
+		   sqlite3_free(zErrMsg);
+		}else{
+		   fprintf(stdout, "UPDATE SDCs preset successfully\n");
+		}
+ 
+	 }
+
+
+}
+
+int8_t CSQL_conn::update(missionGroupChgReq &req)
+{
+
+	char *zErrMsg = 0;
+	int rc;
+	char sql[1024];
+
+
+	 sprintf(sql, "UPDATE SDCs SET missionID=%d "  \
+			 "WHERE camNum='%s'; " ,\
+			 req.dts_num, req.num.c_str());
+	 printf("[SQL_conn::UPDATE]: %s\r\n", sql);
+	   /* Execute SQL statement */
+	 rc = sqlite3_exec(handle, sql, callback, 0, &zErrMsg);
+	 if( rc != SQLITE_OK ){
+		fprintf(stderr, "[UPDATE]:SQL insertSDC error: %s\n", zErrMsg);
+		sqlite3_free(zErrMsg);
+	 }else{
+		fprintf(stdout, "UPDATE SDCs successfully\n");
+	 }
+
+
+
+}
+
+
 
 
 int8_t CSQL_conn::select(string tableName)

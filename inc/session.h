@@ -29,7 +29,7 @@ using boost::asio::ip::tcp;
 
 boost::mutex cout_mtx;
 
-enum {MAX_PACKET_LEN = 4096};
+enum {MAX_PACKET_LEN = 8421};
 
 class CCaptureDevSession
 {
@@ -74,16 +74,16 @@ public:
             time( &nowtime );
 
             if(nowtime != oldtime){
-                printf("count111:  %d\n", count111);
+                //printf("count111:  %d\n", count111);
                 oldtime = nowtime;
                 count111 = 0;
             }
 			for(int i=0; i<bytes_transferred; i++){
 
-				printf("[1]%x,", data_[i]);
+				//printf("[1]%x,", data_[i]);
 			}
 
-			printf("\r\n");
+			//printf("\r\n");
 
 			CProtocol protocol;
 			ProtocolHead head;

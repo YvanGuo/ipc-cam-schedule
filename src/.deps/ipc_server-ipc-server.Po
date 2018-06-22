@@ -1549,13 +1549,16 @@ ipc_server-ipc-server.o: ipc-server.cpp /usr/include/stdc-predef.h \
  /usr/local/include/boost/type_traits/has_nothrow_assign.hpp \
  /usr/local/include/boost/circular_buffer/space_optimized.hpp \
  ../inc/mission.h ../inc/CaptureDevice.h ../inc/SpeedDomeCam.h \
- ../inc/HIKCam.h ../inc/HCNetSDK.h ../inc/service_pool.h \
- ../inc/config_session.h ../inc/protocol_CfgClient.h \
- ../inc/mission_config.h /usr/local/include/boost/property_tree/ptree.hpp \
- /usr/local/include/boost/property_tree/ptree_fwd.hpp \
- /usr/local/include/boost/optional/optional_fwd.hpp \
- /usr/local/include/boost/property_tree/string_path.hpp \
- /usr/local/include/boost/property_tree/id_translator.hpp \
+ ../inc/HIKCam.h ../inc/HCNetSDK.h ../inc/protocol_CfgClient.h \
+ ../inc/service_pool.h ../inc/config_session.h ../inc/sql_conn.h \
+ /usr/local/include/boost/format.hpp \
+ /usr/local/include/boost/format/detail/compat_workarounds.hpp \
+ /usr/local/include/boost/format/detail/config_macros.hpp \
+ /usr/local/include/boost/format/detail/workarounds_gcc-2_95.hpp \
+ /usr/local/include/boost/format/detail/workarounds_stlport.hpp \
+ /usr/local/include/boost/format/format_fwd.hpp \
+ /usr/local/include/boost/format/internals_fwd.hpp \
+ /usr/local/include/boost/format/internals.hpp \
  /usr/local/include/boost/optional.hpp \
  /usr/local/include/boost/optional/optional.hpp \
  /usr/local/include/boost/core/explicit_operator_bool.hpp \
@@ -1564,6 +1567,7 @@ ipc_server-ipc-server.o: ipc-server.cpp /usr/include/stdc-predef.h \
  /usr/local/include/boost/type_traits/is_constructible.hpp \
  /usr/local/include/boost/none.hpp /usr/local/include/boost/none_t.hpp \
  /usr/local/include/boost/utility/compare_pointees.hpp \
+ /usr/local/include/boost/optional/optional_fwd.hpp \
  /usr/local/include/boost/optional/detail/optional_config.hpp \
  /usr/local/include/boost/optional/detail/optional_factory_support.hpp \
  /usr/local/include/boost/optional/detail/optional_aligned_storage.hpp \
@@ -1571,6 +1575,22 @@ ipc_server-ipc-server.o: ipc-server.cpp /usr/include/stdc-predef.h \
  /usr/local/include/boost/optional/detail/optional_reference_spec.hpp \
  /usr/local/include/boost/optional/detail/optional_relops.hpp \
  /usr/local/include/boost/optional/detail/optional_swap.hpp \
+ /usr/local/include/boost/format/alt_sstream.hpp \
+ /usr/local/include/boost/format/alt_sstream_impl.hpp \
+ /usr/local/include/boost/format/format_class.hpp \
+ /usr/local/include/boost/format/exceptions.hpp \
+ /usr/local/include/boost/format/format_implementation.hpp \
+ /usr/local/include/boost/format/group.hpp \
+ /usr/local/include/boost/format/feed_args.hpp \
+ /usr/local/include/boost/format/detail/msvc_disambiguater.hpp \
+ /usr/local/include/boost/format/parsing.hpp \
+ /usr/local/include/boost/format/free_funcs.hpp \
+ /usr/local/include/boost/format/detail/unset_macros.hpp \
+ /usr/local/include/sqlite3.h ../inc/mission_config.h \
+ /usr/local/include/boost/property_tree/ptree.hpp \
+ /usr/local/include/boost/property_tree/ptree_fwd.hpp \
+ /usr/local/include/boost/property_tree/string_path.hpp \
+ /usr/local/include/boost/property_tree/id_translator.hpp \
  /usr/local/include/boost/property_tree/exceptions.hpp \
  /usr/local/include/boost/any.hpp \
  /usr/local/include/boost/property_tree/detail/exception_implementation.hpp \
@@ -1714,27 +1734,7 @@ ipc_server-ipc-server.o: ipc-server.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/4.8.2/bits/fstream.tcc \
  /usr/local/include/boost/typeof/typeof.hpp \
  /usr/local/include/boost/typeof/message.hpp \
- /usr/local/include/boost/typeof/native.hpp ../inc/sql_conn.h \
- /usr/local/include/boost/format.hpp \
- /usr/local/include/boost/format/detail/compat_workarounds.hpp \
- /usr/local/include/boost/format/detail/config_macros.hpp \
- /usr/local/include/boost/format/detail/workarounds_gcc-2_95.hpp \
- /usr/local/include/boost/format/detail/workarounds_stlport.hpp \
- /usr/local/include/boost/format/format_fwd.hpp \
- /usr/local/include/boost/format/internals_fwd.hpp \
- /usr/local/include/boost/format/internals.hpp \
- /usr/local/include/boost/format/alt_sstream.hpp \
- /usr/local/include/boost/format/alt_sstream_impl.hpp \
- /usr/local/include/boost/format/format_class.hpp \
- /usr/local/include/boost/format/exceptions.hpp \
- /usr/local/include/boost/format/format_implementation.hpp \
- /usr/local/include/boost/format/group.hpp \
- /usr/local/include/boost/format/feed_args.hpp \
- /usr/local/include/boost/format/detail/msvc_disambiguater.hpp \
- /usr/local/include/boost/format/parsing.hpp \
- /usr/local/include/boost/format/free_funcs.hpp \
- /usr/local/include/boost/format/detail/unset_macros.hpp \
- /usr/local/include/sqlite3.h
+ /usr/local/include/boost/typeof/native.hpp
 
 /usr/include/stdc-predef.h:
 
@@ -5034,23 +5034,29 @@ ipc_server-ipc-server.o: ipc-server.cpp /usr/include/stdc-predef.h \
 
 ../inc/HCNetSDK.h:
 
+../inc/protocol_CfgClient.h:
+
 ../inc/service_pool.h:
 
 ../inc/config_session.h:
 
-../inc/protocol_CfgClient.h:
+../inc/sql_conn.h:
 
-../inc/mission_config.h:
+/usr/local/include/boost/format.hpp:
 
-/usr/local/include/boost/property_tree/ptree.hpp:
+/usr/local/include/boost/format/detail/compat_workarounds.hpp:
 
-/usr/local/include/boost/property_tree/ptree_fwd.hpp:
+/usr/local/include/boost/format/detail/config_macros.hpp:
 
-/usr/local/include/boost/optional/optional_fwd.hpp:
+/usr/local/include/boost/format/detail/workarounds_gcc-2_95.hpp:
 
-/usr/local/include/boost/property_tree/string_path.hpp:
+/usr/local/include/boost/format/detail/workarounds_stlport.hpp:
 
-/usr/local/include/boost/property_tree/id_translator.hpp:
+/usr/local/include/boost/format/format_fwd.hpp:
+
+/usr/local/include/boost/format/internals_fwd.hpp:
+
+/usr/local/include/boost/format/internals.hpp:
 
 /usr/local/include/boost/optional.hpp:
 
@@ -5070,6 +5076,8 @@ ipc_server-ipc-server.o: ipc-server.cpp /usr/include/stdc-predef.h \
 
 /usr/local/include/boost/utility/compare_pointees.hpp:
 
+/usr/local/include/boost/optional/optional_fwd.hpp:
+
 /usr/local/include/boost/optional/detail/optional_config.hpp:
 
 /usr/local/include/boost/optional/detail/optional_factory_support.hpp:
@@ -5083,6 +5091,40 @@ ipc_server-ipc-server.o: ipc-server.cpp /usr/include/stdc-predef.h \
 /usr/local/include/boost/optional/detail/optional_relops.hpp:
 
 /usr/local/include/boost/optional/detail/optional_swap.hpp:
+
+/usr/local/include/boost/format/alt_sstream.hpp:
+
+/usr/local/include/boost/format/alt_sstream_impl.hpp:
+
+/usr/local/include/boost/format/format_class.hpp:
+
+/usr/local/include/boost/format/exceptions.hpp:
+
+/usr/local/include/boost/format/format_implementation.hpp:
+
+/usr/local/include/boost/format/group.hpp:
+
+/usr/local/include/boost/format/feed_args.hpp:
+
+/usr/local/include/boost/format/detail/msvc_disambiguater.hpp:
+
+/usr/local/include/boost/format/parsing.hpp:
+
+/usr/local/include/boost/format/free_funcs.hpp:
+
+/usr/local/include/boost/format/detail/unset_macros.hpp:
+
+/usr/local/include/sqlite3.h:
+
+../inc/mission_config.h:
+
+/usr/local/include/boost/property_tree/ptree.hpp:
+
+/usr/local/include/boost/property_tree/ptree_fwd.hpp:
+
+/usr/local/include/boost/property_tree/string_path.hpp:
+
+/usr/local/include/boost/property_tree/id_translator.hpp:
 
 /usr/local/include/boost/property_tree/exceptions.hpp:
 
@@ -5371,45 +5413,3 @@ ipc_server-ipc-server.o: ipc-server.cpp /usr/include/stdc-predef.h \
 /usr/local/include/boost/typeof/message.hpp:
 
 /usr/local/include/boost/typeof/native.hpp:
-
-../inc/sql_conn.h:
-
-/usr/local/include/boost/format.hpp:
-
-/usr/local/include/boost/format/detail/compat_workarounds.hpp:
-
-/usr/local/include/boost/format/detail/config_macros.hpp:
-
-/usr/local/include/boost/format/detail/workarounds_gcc-2_95.hpp:
-
-/usr/local/include/boost/format/detail/workarounds_stlport.hpp:
-
-/usr/local/include/boost/format/format_fwd.hpp:
-
-/usr/local/include/boost/format/internals_fwd.hpp:
-
-/usr/local/include/boost/format/internals.hpp:
-
-/usr/local/include/boost/format/alt_sstream.hpp:
-
-/usr/local/include/boost/format/alt_sstream_impl.hpp:
-
-/usr/local/include/boost/format/format_class.hpp:
-
-/usr/local/include/boost/format/exceptions.hpp:
-
-/usr/local/include/boost/format/format_implementation.hpp:
-
-/usr/local/include/boost/format/group.hpp:
-
-/usr/local/include/boost/format/feed_args.hpp:
-
-/usr/local/include/boost/format/detail/msvc_disambiguater.hpp:
-
-/usr/local/include/boost/format/parsing.hpp:
-
-/usr/local/include/boost/format/free_funcs.hpp:
-
-/usr/local/include/boost/format/detail/unset_macros.hpp:
-
-/usr/local/include/sqlite3.h:
