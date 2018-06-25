@@ -228,6 +228,9 @@ int32_t CProtocolClientCfg::ParseSDCcfgInfo(uint8_t * frameBuff, int32_t buffSiz
 	sdcCfg->IP = tmp;
 	p += tmpLen;
 
+	sdcCfg->port = (*(unsigned int *)(p));
+	p += sizeof(unsigned int);
+		
 	tmpLen = *p;
 	p++;
 	memset(tmp, 0, 256);
@@ -304,11 +307,56 @@ int32_t CProtocolClientCfg::ParseSDCcfgInfo(uint8_t * frameBuff, int32_t buffSiz
 
 		sdcCfg->missionPreset[i].plateMaxWidth = (*(unsigned int *)(p));
 		p += sizeof(unsigned int);
+		
+		sdcCfg->missionPreset[i].illparkpara.nNum1 = (*(unsigned int *)(p));
+		p += sizeof(unsigned int);
 
-		memcpy(&sdcCfg->missionPreset[i].illparkpara, p, sizeof(IllegalParkParam));
-		p += sizeof(IllegalParkParam);
-		memcpy(&sdcCfg->missionPreset[i].rect, p, sizeof(RECT));
-		p += sizeof(RECT);
+		sdcCfg->missionPreset[i].illparkpara.nNum2 = (*(unsigned int *)(p));
+		p += sizeof(unsigned int);
+
+		printf("sdcCfg->missionPreset[%d].illparkpara.nNum1 = %d,\r\n",i,sdcCfg->missionPreset[i].illparkpara.nNum1);
+		printf("sdcCfg->missionPreset[%d].illparkpara.nNum2 = %d,\r\n",i,sdcCfg->missionPreset[i].illparkpara.nNum2);
+
+
+		for (int j = 0; j < sdcCfg->missionPreset[i].illparkpara.nNum1; j++) {
+		
+			sdcCfg->missionPreset[i].illparkpara.Area1[j].x = (*(unsigned int *)(p));
+			p += sizeof(unsigned int);
+		
+			printf("sdcCfg->missionPreset[i].illparkpara.Area1[%d].x = %d,\r\n",j,sdcCfg->missionPreset[i].illparkpara.Area1[j].x);
+
+			sdcCfg->missionPreset[i].illparkpara.Area1[j].y = (*(unsigned int *)(p));
+			p += sizeof(unsigned int);
+			printf("sdcCfg->missionPreset[i].illparkpara.Area1[%d].y = %d,\r\n",j,sdcCfg->missionPreset[i].illparkpara.Area1[j].y);
+
+		}
+		
+		for (int j = 0; j < sdcCfg->missionPreset[i].illparkpara.nNum2; j++) {
+
+			sdcCfg->missionPreset[i].illparkpara.Area2[j].x = (*(unsigned int *)(p));
+			p += sizeof(unsigned int);
+			printf("sdcCfg->missionPreset[i].illparkpara.Area2[%d].x = %d,\r\n",j,sdcCfg->missionPreset[i].illparkpara.Area2[j].x);
+
+			sdcCfg->missionPreset[i].illparkpara.Area2[j].y = (*(unsigned int *)(p));
+			p += sizeof(unsigned int);
+			printf("sdcCfg->missionPreset[i].illparkpara.Area2[%d].y = %d,\r\n",j,sdcCfg->missionPreset[i].illparkpara.Area2[j].y);
+		}
+
+		sdcCfg->missionPreset[i].illparkpara.fScaleScreen = (*(float *)(p));
+		p += sizeof(float);
+
+		sdcCfg->missionPreset[i].rect.left = (*(unsigned int *)(p));
+		p += sizeof(unsigned int);
+
+		sdcCfg->missionPreset[i].rect.right = (*(unsigned int *)(p));
+		p += sizeof(unsigned int);
+
+		sdcCfg->missionPreset[i].rect.bottom = (*(unsigned int *)(p));
+		p += sizeof(unsigned int);
+
+		sdcCfg->missionPreset[i].rect.top = (*(unsigned int *)(p));
+		p += sizeof(unsigned int);
+
 		
 		printf("sdcCfg->missionPreset[i].illparkpara.Area1[0].x  = %d\r\n",sdcCfg->missionPreset[i].illparkpara.Area1[0].x);
 		printf("sdcCfg->missionPreset[i].illparkpara.Area1[0].y  = %d\r\n",sdcCfg->missionPreset[i].illparkpara.Area1[0].y);
@@ -419,6 +467,9 @@ int32_t CProtocolClientCfg::packageSDCinfo(int8_t * buff, uint32_t buffLen, SDCc
 	strncpy(p, sdcCfg->IP.c_str(), sdcCfg->IP.length());
 	p += sdcCfg->IP.length();
 
+	(*(unsigned int *)(p)) = sdcCfg->port; //头
+	p += sizeof(unsigned int);
+
 	*p = sdcCfg->m_usrName.length();// 球机登陆用户名长度
 	p++;
 	strncpy(p,  sdcCfg->m_usrName.c_str(), sdcCfg->m_usrName.length());
@@ -457,23 +508,98 @@ int32_t CProtocolClientCfg::packageSDCinfo(int8_t * buff, uint32_t buffLen, SDCc
 	
 
 	(*(uint32_t *)(p)) = sdcCfg->missionNum;
+	
+	//printf("[CProtocolClientCfg::packageSDCinfo]:mmmmmmmmmmmmmmmmmmmmmmmmissionNum = %d, sdcCfg->missionNum = %d, sdcCfg->camNum = %s\r\n", (*(uint32_t *)p), sdcCfg->missionNum , sdcCfg->camNum.c_str());
 	p += sizeof(uint32_t);
 
 	//printf(" sdcCfg->camNum.c_str() = %s, missionNum = %d\r\n",	sdcCfg->camNum.c_str(), sdcCfg->missionNum);
 	
 
 	*p = sdcCfg->presetTotal;
+	//printf("[CProtocolClientCfg::packageSDCinfo]:pppppppppppppppppppppppppppresetTotal = %d, sdcCfg->presetTotal = %d\r\n", (*p), sdcCfg->presetTotal );
+
 	p++;
 
+	//printf("sizeof(Preset) = %d\r\n", sizeof(Preset));
 	for(int i=0;i<sdcCfg->presetTotal;i++){
 
-		memcpy(p, &sdcCfg->missionPreset[i], sizeof(Preset));
-		p += sizeof(Preset);
+		*p = sdcCfg->missionPreset[i].camNum.length();// 品牌长度
+		p++;
+		strncpy(p,  sdcCfg->missionPreset[i].camNum.c_str(), sdcCfg->missionPreset[i].camNum.length());
+		p += sdcCfg->missionPreset[i].camNum.length();
+		
+		 (*(unsigned int *)(p)) = sdcCfg->missionPreset[i].presetNum;
+	//	 printf("sdcCfg->missionPreset[i].presetNum = %d\r\n", sdcCfg->missionPreset[i].presetNum);
+		p += sizeof(unsigned int);
+		
+		(*(unsigned int *)(p)) = sdcCfg->missionPreset[i].holdSeconds;
+		
+	//	printf("sdcCfg->missionPreset[i].holdSeconds = %d\r\n", sdcCfg->missionPreset[i].holdSeconds);
+		p += sizeof(unsigned int);
+		
+		(*(unsigned int *)(p)) = sdcCfg->missionPreset[i].mode;
+		p += sizeof(unsigned int);
+		
+		(*(unsigned int *)(p)) = sdcCfg->missionPreset[i].priority;
+		p += sizeof(unsigned int);
+		
+		(*(unsigned int *)(p)) = sdcCfg->missionPreset[i].plateMinWidth;
+		p += sizeof(unsigned int);
+		
+		(*(unsigned int *)(p)) = sdcCfg->missionPreset[i].plateMaxWidth;
+		p += sizeof(unsigned int);
+
+		(*(unsigned int *)(p)) = sdcCfg->missionPreset[i].illparkpara.nNum1;
+		p += sizeof(unsigned int);
+
+		(*(unsigned int *)(p)) = sdcCfg->missionPreset[i].illparkpara.nNum2;
+		p += sizeof(unsigned int);
+		
+	//	printf("sdcCfg->missionPreset[i].illparkpara.nNum1 = %d\r\n", sdcCfg->missionPreset[i].illparkpara.nNum1);
+		for(int j = 0; j < sdcCfg->missionPreset[i].illparkpara.nNum1; j++){
+
+			(*(unsigned int *)(p)) = sdcCfg->missionPreset[i].illparkpara.Area1[j].x;
+			p += sizeof(unsigned int);
+		//	printf("sdcCfg->missionPreset[i].illparkpara.Area1[%d].x = %d,",j,sdcCfg->missionPreset[i].illparkpara.Area1[j].x);
+			
+			(*(unsigned int *)(p)) = sdcCfg->missionPreset[i].illparkpara.Area1[j].y;
+			p += sizeof(unsigned int);
+			
+		//	printf("sdcCfg->missionPreset[i].illparkpara.Area1[%d].y = %d,",j,sdcCfg->missionPreset[i].illparkpara.Area1[j].y);
+		}
+		
+		//printf("sdcCfg->missionPreset[i].illparkpara.nNum2 = %d\r\n", sdcCfg->missionPreset[i].illparkpara.nNum2);
+		for(int j = 0; j < sdcCfg->missionPreset[i].illparkpara.nNum2; j++){
+
+			(*(unsigned int *)(p)) = sdcCfg->missionPreset[i].illparkpara.Area2[j].x;
+			p += sizeof(unsigned int);
+			
+			(*(unsigned int *)(p)) = sdcCfg->missionPreset[i].illparkpara.Area2[j].y;
+			p += sizeof(unsigned int);
+		}
+		
+		(*(float *)(p)) = sdcCfg->missionPreset[i].illparkpara.fScaleScreen;
+		p += sizeof(float);
+		
+		(*(unsigned int *)(p)) = sdcCfg->missionPreset[i].rect.left;
+		p += sizeof(unsigned int);
+		
+		(*(unsigned int *)(p)) = sdcCfg->missionPreset[i].rect.right;
+		p += sizeof(unsigned int);
+		
+		(*(unsigned int *)(p)) = sdcCfg->missionPreset[i].rect.bottom;
+		p += sizeof(unsigned int);
+		
+		(*(unsigned int *)(p)) = sdcCfg->missionPreset[i].rect.top;
+		p += sizeof(unsigned int);
 	}
-	(*(uint16_t *)p) = htons(Crc16(buff, p-(char *)buff)); //从magic到CRC前一位的所有数据的CRC
+	
+	(*(uint16_t *)p) = htons(Crc16(buff, p-(char *)buff-sizeof(uint16_t))); //从magic到CRC前一位的所有数据的CRC
 	p += sizeof(unsigned short);
 
+	
 	*frameLen = p-(char *)buff;
+	//printf("[CProtocolClientCfg::packageSDCinfo]:cccccccccccccccccccccccccccccccccCRC = %d, frameLen = %d\r\n", (*(uint16_t *)p), *frameLen);
 
 	return *frameLen;
 }

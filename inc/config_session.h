@@ -88,19 +88,19 @@ public:
 
 		MissionMap_t *missions = MissionMapGet();
 
-		printf("[CConfigSession handle_read]:missions size = %d\r\n", missions->size());
+		//printf("[CConfigSession handle_read]:missions size = %d\r\n", missions->size());
 
 		int frameLen = prot.packageSDCrespone(data_write, MAX_PACKET_LEN, 1);
-		printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
+		//printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
 		boost::asio::async_write(socket_, boost::asio::buffer(data_write, frameLen),  boost::bind(&CConfigSession::handle_write2, this,
 				   boost::asio::placeholders::error));
 
-	    printf("[CConfigSession handle_read]:frameLen = %d, _line_ = %d\r\n", frameLen, __LINE__);
+	   // printf("[CConfigSession handle_read]:frameLen = %d, _line_ = %d\r\n", frameLen, __LINE__);
 
 		for (iter = missions->begin(); iter != missions->end(); iter++) {
 
 			int frameLen = prot.packageGroupInfo(data_write, MAX_PACKET_LEN, iter->second.missionNum);
-			printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
+			//printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
 			boost::asio::async_write(socket_, boost::asio::buffer(data_write, frameLen),  boost::bind(&CConfigSession::handle_write2, this,
 					   boost::asio::placeholders::error));
 
@@ -127,7 +127,7 @@ public:
 			for(int i=0; i<iter->second.totalSpdDomeCam; i++){
 
 
-				printf("[CConfigSession handle_read]: cur sdc = %d\r\n", i);
+				//printf("[CConfigSession handle_read]: cur sdc = %d\r\n", i);
 			//	iter->second.showCfg();
 				int frameLen = prot.packageSDCinfo(data_write, MAX_PACKET_LEN, &(iter->second.SpdDomeCam[i]->m_sdcCfg));
 				//printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
@@ -141,7 +141,7 @@ public:
 		}
 
 
-			printf("[CConfigSession handle_read]:G_missionUnstart.totalCapDev= %d\r\n", G_missionUnstart.totalCapDev);
+			//printf("[CConfigSession handle_read]:G_missionUnstart.totalCapDev= %d\r\n", G_missionUnstart.totalCapDev);
 			for(int i=0; i<G_missionUnstart.totalCapDev; i++){
 							
 				int frameLen = prot.packageCapDevinfo(data_write, MAX_PACKET_LEN, &(G_missionUnstart.capDev[i]));
@@ -171,7 +171,7 @@ public:
 							
 			}
 			
-			printf("[CConfigSession handle_read]:G_missionUnstart.totalSpdDomeCam2= %d\r\n", G_missionUnstart.totalSpdDomeCam);
+			//printf("[CConfigSession handle_read]:G_missionUnstart.totalSpdDomeCam2= %d\r\n", G_missionUnstart.totalSpdDomeCam);
 
 
 		return 0;

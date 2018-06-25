@@ -70,6 +70,29 @@ int MissionAddSDC(CSpeedDomeCam *sdc)
 	
 }
 
+int MissionAddPreset(Preset *preset)
+{
+
+	mutex::scoped_lock lock(mu);  
+
+	printf("[MissionAddSDC]:G_MissionMap.lenth = %d\r\n", G_MissionMap.size());
+	map<int, CMission>::iterator iter;
+	for (iter = G_MissionMap.begin(); iter != G_MissionMap.end(); iter++) 
+	{
+		
+		if(0 == iter->second.addPreset(preset)){
+
+			return 0;
+			
+		}
+		
+	}
+
+	return -1;
+	
+	
+}
+
 int MissionUpdateSDC(CSpeedDomeCam *sdc)
 {
 
@@ -181,6 +204,7 @@ int MissionAddCapDev(CCaptureDevice *capDev)
 }
 
 
+
 #if 1
 CMission *MissionGet(int32_t missionNum)
 {
@@ -270,12 +294,12 @@ int8_t CMission::updateSDC(CSpeedDomeCam *sdc)
 			SpdDomeCam[i]->m_sdcCfg.brandName = sdc->m_sdcCfg.brandName;
 			
 			SpdDomeCam[i]->m_sdcCfg.productType = sdc->m_sdcCfg.productType;
-			for(int j=0; j<sdc->totalPTZpreset; j++){
+			for(int j=0; j<sdc->m_sdcCfg.presetTotal; j++){
 				
 				SpdDomeCam[i]->m_sdcCfg.missionPreset[j] = sdc->m_sdcCfg.missionPreset[j];
 			}
 
-			SpdDomeCam[i]->totalPTZpreset = sdc->totalPTZpreset;
+			SpdDomeCam[i]->m_sdcCfg.presetTotal = sdc->m_sdcCfg.presetTotal;
 
 			if(-1 == SpdDomeCam[i]->m_sdcCfg.missionNum ){
 
@@ -381,12 +405,12 @@ int8_t CMission::addSDC(CSpeedDomeCam *sdc)
 	SpdDomeCam[totalSpdDomeCam]->m_sdcCfg.brandName = sdc->m_sdcCfg.brandName;
 	SpdDomeCam[totalSpdDomeCam]->m_sdcCfg.camNum  = sdc->m_sdcCfg.camNum;
 	SpdDomeCam[totalSpdDomeCam]->m_sdcCfg.productType = sdc->m_sdcCfg.productType;
-	for(int j=0; j<sdc->totalPTZpreset; j++){
+	for(int j=0; j<sdc->m_sdcCfg.presetTotal; j++){
 		
 		SpdDomeCam[totalSpdDomeCam]->m_sdcCfg.missionPreset[j] = sdc->m_sdcCfg.missionPreset[j];
 	}
 
-	SpdDomeCam[totalSpdDomeCam]->totalPTZpreset = sdc->totalPTZpreset;
+	SpdDomeCam[totalSpdDomeCam]->m_sdcCfg.presetTotal = sdc->m_sdcCfg.presetTotal;
 
 	totalSpdDomeCam++;
 
@@ -413,12 +437,12 @@ int8_t CMission::addSDC(CSpeedDomeCam_ptr sdc)
 	SpdDomeCam[totalSpdDomeCam]->m_sdcCfg.brandName = sdc->m_sdcCfg.brandName;
 	SpdDomeCam[totalSpdDomeCam]->m_sdcCfg.camNum  = sdc->m_sdcCfg.camNum;
 	SpdDomeCam[totalSpdDomeCam]->m_sdcCfg.productType = sdc->m_sdcCfg.productType;
-	for(int j=0; j<sdc->totalPTZpreset; j++){
+	for(int j=0; j<sdc->m_sdcCfg.presetTotal; j++){
 		
 		SpdDomeCam[totalSpdDomeCam]->m_sdcCfg.missionPreset[j] = sdc->m_sdcCfg.missionPreset[j];
 	}
 
-	SpdDomeCam[totalSpdDomeCam]->totalPTZpreset = sdc->totalPTZpreset;
+	SpdDomeCam[totalSpdDomeCam]->m_sdcCfg.presetTotal = sdc->m_sdcCfg.presetTotal;
 
 	totalSpdDomeCam++;
 
@@ -450,16 +474,23 @@ int8_t CMission::addCapDev(CCaptureDevice *dev)
 
 int8_t CMission::addPreset(Preset *preset)
 {
+	printf("[CMission::addPreset]:sssssssssssssssssssssssssssstotalSpdDomeCam = %d\r\n", totalSpdDomeCam);
 
 	for(int i=0; i<totalSpdDomeCam; i++){
 
+		printf("[CMission::addPreset]:ssssssssssssssssssssssssssssSpdDomeCam[i]->m_sdcCfg.camNum:%s -- preset->camNum = %s\r\n", SpdDomeCam[i]->m_sdcCfg.camNum.c_str(), preset->camNum.c_str());
+
 		if(SpdDomeCam[i]->m_sdcCfg.camNum == preset->camNum){
 
-			SpdDomeCam[i]->m_sdcCfg.missionPreset[SpdDomeCam[i]->totalPTZpreset++] = *preset;
+			
+			SpdDomeCam[i]->m_sdcCfg.missionPreset[SpdDomeCam[i]->m_sdcCfg.presetTotal++] = *preset;
+			printf("[CMission::addPreset]:SpdDomeCam[i]->totalPTZpreset = %d\r\n",SpdDomeCam[i]->m_sdcCfg.presetTotal);
 
+			return 0;
 		}
 	}
 
+	return -1;
 
 }
 
@@ -478,7 +509,7 @@ void CMission::showCfg()
 		printf("[CMission::showCfg];SpdDomeCam[%d]: brandName = %s\r\n",  i, SpdDomeCam[i]->m_sdcCfg.brandName.c_str());
 		printf("[CMission::showCfg];SpdDomeCam[%d]: missionNum = %d\r\n",  i, SpdDomeCam[i]->m_sdcCfg.missionNum);
 		
-		for(int j=0; j<SpdDomeCam[i]->totalPTZpreset; j++){
+		for(int j=0; j<SpdDomeCam[i]->m_sdcCfg.presetTotal; j++){
 	
 		//	printf("[CMission::showCfg];SpdDomeCam[%d]: missionPreset[%d] = %d\r\n",  i, j, SpdDomeCam[i]->m_sdcCfg.missionPreset[j].presetNum);
 		}
@@ -512,12 +543,14 @@ int8_t CMission::SpeedDomeCamInit(uint16_t index)
 
 
 #if 1
-CSpeedDomeCam_ptr CMission::getFreeSDC()
+int CMission::getFreeSDC(CSpeedDomeCam_ptr &ptr)
 {
 	mutex::scoped_lock lock(mu_SDC); 
+	//CSpeedDomeCam_ptr ptr;
 
 	int j = curSpdDomeCam;
-	
+
+	printf("totalSpdDomeCam = %d\r\n", totalSpdDomeCam);
 	for(int i=0; i<totalSpdDomeCam; i++){
 
 		j++;
@@ -531,15 +564,19 @@ CSpeedDomeCam_ptr CMission::getFreeSDC()
 		
 		if(FREE == SpdDomeCam[j]->isUsing){
 
+			printf("[CMission::getFreeSDC]:CMission::getFreeSDC ID is = %s\r\n", SpdDomeCam[j]->m_sdcCfg.camNum.c_str());
+
 			SpdDomeCam[j]->isUsing = BUSY;
 
 			curSpdDomeCam = j;
-			return SpdDomeCam[j];
+			ptr = SpdDomeCam[j];
+			//return SpdDomeCam[j];
 		}		
 		
 	}
+	printf("totalSpdDomeCam3 = %d\r\n", totalSpdDomeCam);
 
-	//return NULL;
+	//return ptr;
 }
 
 CSpeedDomeCam_ptr CMission::getSDC(string camNum)
