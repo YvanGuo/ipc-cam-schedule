@@ -61,6 +61,7 @@ public:
 		timer->async_wait(boost::bind(&CConfigSession::updateMissionInfo, this)); 
 	
 		timer_io.run(); 
+		printf("_uuuuuuuuuuuuuuuuuuuuuuuuuuuuupdateTimerStart exit\r\n");
 	
 		return 0;
 	}
@@ -78,6 +79,7 @@ public:
 		
     }
 
+#define SEND_LEN 1024
 	int8_t update()
     {
 
@@ -92,8 +94,9 @@ public:
 
 		int frameLen = prot.packageSDCrespone(data_write, MAX_PACKET_LEN, 1);
 		//printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
-		boost::asio::async_write(socket_, boost::asio::buffer(data_write, frameLen),  boost::bind(&CConfigSession::handle_write2, this,
-				   boost::asio::placeholders::error));
+		boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write2, this,
+				   boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
+		//boost::asio::write (socket_, boost::asio::buffer(data_write, frameLen), boost::asio::placeholders::error)
 
 	   // printf("[CConfigSession handle_read]:frameLen = %d, _line_ = %d\r\n", frameLen, __LINE__);
 
@@ -101,8 +104,8 @@ public:
 
 			int frameLen = prot.packageGroupInfo(data_write, MAX_PACKET_LEN, iter->second.missionNum);
 			//printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
-			boost::asio::async_write(socket_, boost::asio::buffer(data_write, frameLen),  boost::bind(&CConfigSession::handle_write2, this,
-					   boost::asio::placeholders::error));
+			boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write2, this,
+					   boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
 
 		}
 
@@ -116,23 +119,17 @@ public:
 							
 				int frameLen = prot.packageCapDevinfo(data_write, MAX_PACKET_LEN, &(iter->second.capDev[i]));
 				//printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
-				boost::asio::async_write(socket_, boost::asio::buffer(data_write, frameLen),  boost::bind(&CConfigSession::handle_write2, this,
-						   boost::asio::placeholders::error));
+				boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write2, this,
+						   boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
 
 			}
 
-			
-			//printf("[CConfigSession handle_read] packageCapDevinfo completed ~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n");
-
 			for(int i=0; i<iter->second.totalSpdDomeCam; i++){
 
-
-				//printf("[CConfigSession handle_read]: cur sdc = %d\r\n", i);
-			//	iter->second.showCfg();
 				int frameLen = prot.packageSDCinfo(data_write, MAX_PACKET_LEN, &(iter->second.SpdDomeCam[i]->m_sdcCfg));
 				//printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
-							boost::asio::async_write(socket_, boost::asio::buffer(data_write, frameLen),  boost::bind(&CConfigSession::handle_write2, this,
-									   boost::asio::placeholders::error));
+							boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write2, this,
+									   boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
 
 			}
 
@@ -146,26 +143,26 @@ public:
 							
 				int frameLen = prot.packageCapDevinfo(data_write, MAX_PACKET_LEN, &(G_missionUnstart.capDev[i]));
 				//printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
-							boost::asio::async_write(socket_, boost::asio::buffer(data_write, frameLen),  boost::bind(&CConfigSession::handle_write2, this,
-									   boost::asio::placeholders::error));
+							boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write2, this,
+									   boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
 
 			}
 
 			
 			//printf("[CConfigSession handle_read] packageCapDevinfo completed ~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n");
-			printf("[CConfigSession handle_read]:G_missionUnstart.totalSpdDomeCam= %d\r\n", G_missionUnstart.totalSpdDomeCam);
+			//printf("[CConfigSession handle_read]:G_missionUnstart.totalSpdDomeCam= %d\r\n", G_missionUnstart.totalSpdDomeCam);
 
 			for(int i=0; i<G_missionUnstart.totalSpdDomeCam; i++){
 
 
-				printf("[CConfigSession handle_read]: cur G_missionUnstart sdc = %d\r\n", i);
+				//printf("[CConfigSession handle_read]: cur G_missionUnstart sdc = %d, camNum = %s\r\n", i, G_missionUnstart.SpdDomeCam[i]->m_sdcCfg.camNum.c_str());
 				int frameLen = prot.packageSDCinfo(data_write, MAX_PACKET_LEN, &(G_missionUnstart.SpdDomeCam[i]->m_sdcCfg));
 				//printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
 				//if(socket_){
 
 				
-					boost::asio::async_write(socket_, boost::asio::buffer(data_write, frameLen),  boost::bind(&CConfigSession::handle_write2, this,
-													   boost::asio::placeholders::error));
+					boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write2, this,
+													   boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
 
 				//}//
 							
@@ -262,6 +259,10 @@ public:
 				if(0 == req.type){
 
 					MissionUpdateSDCMissionGroup(req);
+					
+				}else if(1 == req.type){
+
+					MissionUpdateCapDevMissionGroup(req);
 				}
 				//update();
 						
@@ -328,12 +329,12 @@ public:
         }
     }
 
-	void handle_write2(const boost::system::error_code& error)
+	void handle_write2(const boost::system::error_code& error, size_t bytes_transferred)
     {
 	     if (!error)
 	     {
 
-			
+			//printf("[handle_write2]:bytes_transferred = %d\r\n", bytes_transferred);
 		 }else
          {
          	cerr<<"pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp wrire(): error.message:"<<error.message()<<'\n';  
@@ -354,3 +355,4 @@ private:
 };
 
 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   

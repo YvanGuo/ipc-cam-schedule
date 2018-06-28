@@ -102,6 +102,11 @@ public:
 
 					capDev.missionNum = MissionMatch(&capDev);
 					printf("capDev.missionNum = %d\r\n", capDev.missionNum);
+					if(-1 == capDev.missionNum){
+					
+						printf("capDev.missionNum = -1 , means not divide into groups\r\n");
+						break;
+					}
 
 					mission = MissionGet(capDev.missionNum);
 					if(NULL == mission){
@@ -120,6 +125,7 @@ public:
 					}
 
 					capDev.SpdDomeCam = spdDomeCam;
+					capDev.missionStatus = MISSION_READY;
 
 					printf("[session::showCfg];SpdDomeCam[%d]: m_usrName = %s\r\n",  0, capDev.SpdDomeCam->m_sdcCfg.m_usrName.c_str());
 					printf("[session::showCfg];SpdDomeCam[%d]: m_pwd = %s\r\n",  0, capDev.SpdDomeCam->m_sdcCfg.m_pwd.c_str());
@@ -166,8 +172,34 @@ public:
 					//data_write[4] = 102;
 					
 					printf("get heartbeat start respone: \r\n");
+					if(MISSION_COMPLETED == capDev.missionStatus \
+						|| MISSION_FAILD == capDev.missionStatus){
+
 					
-					if(NULL == capDev.SpdDomeCam){
+						capDev.missionNum = MissionMatch(&capDev);
+						printf("capDev.missionNum = %d\r\n", capDev.missionNum);
+						if(-1 == capDev.missionNum){
+											
+							printf("capDev.missionNum = -1 , means not divide into groups\r\n");
+							break;
+						}
+
+						mission = MissionGet(capDev.missionNum);
+
+						mission->getFreeSDC(capDev.SpdDomeCam);
+						capDev.missionStatus = MISSION_READY;
+						mission->updateCapdev(&capDev);
+						
+						if(NULL == capDev.SpdDomeCam){
+		
+							printf("erro capDev.SpdDomeCam = NULL\r\n");
+						}
+
+						printf("start chg mission cur SpdDomeCam is %s................................................\r\n", capDev.SpdDomeCam->m_sdcCfg.camNum.c_str());
+
+					}
+						
+					if(NULL == capDev.SpdDomeCam || -1 == capDev.missionNum){
 
 						//printf("erro capDev.SpdDomeCam = NULL\r\n");
 						capDev.missionNum = MissionMatch(&capDev);
@@ -175,6 +207,13 @@ public:
 
 						mission = MissionGet(capDev.missionNum);
 						printf("capDev.missionNum3 = %d\r\n", capDev.missionNum);
+						
+						if(-1 == capDev.missionNum){
+											
+							printf("capDev.missionNum = -1 , means not divide into groups\r\n");
+							break;
+						}
+						
 						boost::shared_ptr<CSpeedDomeCam> spdDomeCam;
 						mission->getFreeSDC(spdDomeCam);
 						printf("capDev.missionNum4d = %d\r\n", capDev.missionNum);
@@ -183,6 +222,7 @@ public:
 
 							printf("NULL != spdDomeCam\r\n");
 							capDev.SpdDomeCam = spdDomeCam;
+							capDev.missionStatus = MISSION_READY;
 							capDev.start();
 							capDev.isOnline = 1;
 							
@@ -205,7 +245,7 @@ public:
 
 					uint8_t *p = data_+5;
 
-					printf("Snap Schedule respone\r\n");
+					printf("Snap lock respone\r\n");
 				
 					printf("result = %d\r\n",*p);
 					p++;
@@ -230,9 +270,20 @@ public:
 					printf("erroCode = %d\r\n",*(uint32_t *)p);
 
 					status = 0;
-
+#if 0
 					if(MISSION_COMPLETED == capDev.missionStatus \
 						|| MISSION_FAILD == capDev.missionStatus){
+
+					
+						capDev.missionNum = MissionMatch(&capDev);
+						printf("capDev.missionNum = %d\r\n", capDev.missionNum);
+						if(-1 == capDev.missionNum){
+											
+							printf("capDev.missionNum = -1 , means not divide into groups\r\n");
+							break;
+						}
+
+						mission = MissionGet(capDev.missionNum);
 
 						mission->getFreeSDC(capDev.SpdDomeCam);
 						capDev.missionStatus = MISSION_READY;
@@ -246,6 +297,7 @@ public:
 						printf("start chg mission cur SpdDomeCam is %s................................................\r\n", capDev.SpdDomeCam->m_sdcCfg.camNum.c_str());
 
 					}
+#endif
 					
 		
 					

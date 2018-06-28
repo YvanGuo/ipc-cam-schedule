@@ -16,6 +16,11 @@ int32_t CSpeedDomeCam::deInit()
 
 }
 
+int32_t CSpeedDomeCam::loginOut()
+{
+
+
+}
 
 int32_t CSpeedDomeCam::TurnPTZPreset(int32_t presetNum)
 {

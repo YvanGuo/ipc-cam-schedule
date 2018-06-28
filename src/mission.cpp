@@ -183,6 +183,71 @@ int MissionUpdateSDCMissionGroup(missionGroupChgReq &req)
 	
 }
 
+int MissionUpdateCapDevMissionGroup(missionGroupChgReq &req)
+{
+	mutex::scoped_lock lock(mu);  
+
+	printf("[MissionUpdateCapDevMissionGroup]:G_MissionMap.lenth = %d\r\n", G_MissionMap.size());
+	map<int, CMission>::iterator iter;
+	if(req.ori_num == -1){// 将未分组中的球机转到指定分组
+	
+		for (iter = G_MissionMap.begin(); iter != G_MissionMap.end(); iter++) 
+		{
+			printf("[MissionUpdateCapDevMissionGroup]:req.dts_num = %d, iter->second.missionNum = %d:::::\r\n",req.dts_num, iter->second.missionNum);
+			if(req.dts_num == iter->second.missionNum){
+		
+				CCaptureDevice *capDev = G_missionUnstart.getCapDev(req.num);
+				if(!capDev){
+
+					return -1;
+				}
+				printf("[MissionUpdateCapDevMissionGroup]:req cannum = %s:::::\r\n",req.num.c_str());
+				printf("[MissionUpdateCapDevMissionGroup]:sdc cannum = %s:::::\r\n",capDev->devName.c_str());
+				printf("[MissionUpdateCapDevMissionGroup]iter->second.showCfg()1:::::\r\n");
+				//iter->second.showCfg();
+				capDev->missionNum = req.dts_num;
+				iter->second.addCapDev(capDev);
+				printf("[MissionUpdateCapDevMissionGroup]iter->second.showCfg()2:::::\r\n");
+				iter->second.showCfg();
+				G_missionUnstart.removeCapDev(req.num);
+				printf("[MissionUpdateCapDevMissionGroup]:G_missionUnstart.showCfg():::::\r\n");
+				//G_missionUnstart.showCfg();
+	
+				return 0;
+			}
+		}
+	}else{// 将指定分组中的球机转到未分组
+
+		for (iter = G_MissionMap.begin(); iter != G_MissionMap.end(); iter++) 
+		{
+			if(req.ori_num == iter->second.missionNum){
+		
+				CCaptureDevice *capDev = iter->second.getCapDev(req.num);
+				if(!capDev){
+
+					return -1;
+				}
+				printf("[MissionUpdateCapDevMissionGroup]:req cannum = %s:::::\r\n",req.num.c_str());
+				printf("[MissionUpdateCapDevMissionGroup]:sdc cannum = %s:::::\r\n",capDev->devName.c_str());
+				capDev->missionNum = req.dts_num;
+				//G_missionUnstart.showCfg();
+				G_missionUnstart.addCapDev(capDev);
+				G_missionUnstart.showCfg();
+				//iter->second.showCfg();
+				iter->second.removeCapDev(req.num);
+				
+				return 0;
+			}
+		}
+
+
+	}
+
+
+	return -1;
+	
+}
+
 int MissionAddCapDev(CCaptureDevice *capDev)
 {
 
@@ -217,6 +282,34 @@ CMission *MissionGet(int32_t missionNum)
 	return &iter->second;
 		
 }
+
+#if 0
+CMission *MissionGet(CCaptureDevice *para_capDev)
+{
+
+	mutex::scoped_lock lock(mu);  
+
+	map<int, CMission>::iterator iter;
+	for (iter = G_MissionMap.begin(); iter != G_MissionMap.end(); iter++) 
+	{
+		for(int i=0; i<iter->second.totalCapDev; i++){
+
+			printf("[CMission::match] [%d]: para_capDev->devNum = %s, capDev[i].devNum = %s\r\n",i, para_capDev->devNum.c_str(), G_MissionMap.second.capDev[i].devNum.c_str());
+			if(para_capDev->devNum == G_MissionMap.second.capDev[i].devNum){
+
+				printf("[CMission::match]: matched\r\n");
+				return &iter->second;
+			}
+		}
+	}
+	
+	
+
+	return NULL;
+		
+}
+#endif
+
 #endif
 
 MissionMap_t *MissionMapGet()
@@ -465,10 +558,35 @@ int8_t CMission::addCapDev(CCaptureDevice *dev)
 	printf("[CMission::addCapDev];capDev[%d]: devType = %s\r\n",  totalCapDev, capDev[totalCapDev].devType.c_str());
 	printf("[CMission::addCapDev];capDev[%d]: IP = %s\r\n",  totalCapDev, capDev[totalCapDev].IP.c_str());
 	printf("[CMission::addCapDev];capDev[%d]: MAC = %s\r\n",  totalCapDev, capDev[totalCapDev].MAC.c_str());
+	printf("[CMission::addCapDev];capDev[%d]: missionNum = %d\r\n",  totalCapDev, capDev[totalCapDev].missionNum);
 
 	totalCapDev++;
 
 	printf("[CMission::addCapDev];totalCapDev = %d\r\n", totalCapDev);
+
+}
+
+int8_t CMission::removeCapDev(string devNum)
+{
+	mutex::scoped_lock lock(mu_SDC); 
+
+	for(int i=0; i<totalCapDev; i++){
+
+		if(capDev[i].devNum  == devNum){
+
+			for(int j=i; j<totalCapDev; j++){
+
+				capDev[j] = capDev[j+1];
+			}
+
+			totalCapDev--;
+			
+			return 0;
+		}
+	}
+
+	return -1;
+
 
 }
 
@@ -550,7 +668,7 @@ int CMission::getFreeSDC(CSpeedDomeCam_ptr &ptr)
 
 	int j = curSpdDomeCam;
 
-	printf("totalSpdDomeCam = %d\r\n", totalSpdDomeCam);
+	printf("totalSpdDomeCam = %d, curSpdDomeCam = %s,%d\r\n", totalSpdDomeCam, SpdDomeCam[j]->m_sdcCfg.camNum.c_str(),curSpdDomeCam);
 	for(int i=0; i<totalSpdDomeCam; i++){
 
 		j++;
@@ -560,7 +678,7 @@ int CMission::getFreeSDC(CSpeedDomeCam_ptr &ptr)
 			j = 0;
 		}
 
-		printf("[CMission::getFreeSDC]:CMission::getFreeSDC totalSpdDomeCam = %d\r\n", totalSpdDomeCam);
+		printf("[CMission::getFreeSDC]:CMission::getFreeSDC  = %s isUsing = %d\r\n", SpdDomeCam[j]->m_sdcCfg.camNum.c_str(), SpdDomeCam[j]->isUsing);
 		
 		if(FREE == SpdDomeCam[j]->isUsing){
 
@@ -570,13 +688,14 @@ int CMission::getFreeSDC(CSpeedDomeCam_ptr &ptr)
 
 			curSpdDomeCam = j;
 			ptr = SpdDomeCam[j];
+			return j;
 			//return SpdDomeCam[j];
 		}		
 		
 	}
 	printf("totalSpdDomeCam3 = %d\r\n", totalSpdDomeCam);
 
-	//return ptr;
+	return -1;
 }
 
 CSpeedDomeCam_ptr CMission::getSDC(string camNum)
@@ -600,6 +719,24 @@ CSpeedDomeCam_ptr CMission::getSDC(string camNum)
 #endif
 
 
+CCaptureDevice *CMission::getCapDev(string devNum)
+{
+	mutex::scoped_lock lock(mu_SDC); 
+
+	printf("CMission::getCapDev totalCapDev  = %d\r\n", totalCapDev);
+
+	for(int i=0; i<totalCapDev; i++){
+
+		printf("CMission::capDev[i].devName  = %s, %s\r\n", capDev[i].devNum.c_str(), devNum.c_str());
+		if(capDev[i].devNum == devNum){
+
+			printf("CMission::getCapDev --------------------------------------- find! devNum = %s\r\n", capDev[i].devNum.c_str());
+			return &capDev[i];
+			
+		}
+	}
+
+}
 
 
 
