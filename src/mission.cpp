@@ -668,7 +668,7 @@ int CMission::getFreeSDC(CSpeedDomeCam_ptr &ptr)
 
 	int j = curSpdDomeCam;
 
-	printf("totalSpdDomeCam = %d, curSpdDomeCam = %s,%d\r\n", totalSpdDomeCam, SpdDomeCam[j]->m_sdcCfg.camNum.c_str(),curSpdDomeCam);
+	//printf("totalSpdDomeCam = %d, curSpdDomeCam = %s,%d\r\n", totalSpdDomeCam, SpdDomeCam[j]->m_sdcCfg.camNum.c_str(),curSpdDomeCam);
 	for(int i=0; i<totalSpdDomeCam; i++){
 
 		j++;

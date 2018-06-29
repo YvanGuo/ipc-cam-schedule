@@ -748,9 +748,9 @@ ipc_server-CaptureDevice.o: CaptureDevice.cpp /usr/include/stdc-predef.h \
  /usr/include/bits/siginfo.h /usr/include/bits/sigaction.h \
  /usr/include/bits/sigcontext.h /usr/include/bits/sigstack.h \
  /usr/include/sys/ucontext.h /usr/include/bits/sigthread.h \
- ../inc/SpeedDomeCam.h /usr/local/include/boost/bind.hpp \
- /usr/local/include/boost/bind/bind.hpp /usr/local/include/boost/ref.hpp \
- /usr/local/include/boost/core/ref.hpp \
+ ../inc/HCNetSDK.h ../inc/SpeedDomeCam.h \
+ /usr/local/include/boost/bind.hpp /usr/local/include/boost/bind/bind.hpp \
+ /usr/local/include/boost/ref.hpp /usr/local/include/boost/core/ref.hpp \
  /usr/local/include/boost/mem_fn.hpp \
  /usr/local/include/boost/bind/mem_fn.hpp \
  /usr/local/include/boost/get_pointer.hpp \
@@ -3175,6 +3175,8 @@ ipc_server-CaptureDevice.o: CaptureDevice.cpp /usr/include/stdc-predef.h \
 /usr/include/sys/ucontext.h:
 
 /usr/include/bits/sigthread.h:
+
+../inc/HCNetSDK.h:
 
 ../inc/SpeedDomeCam.h:
 

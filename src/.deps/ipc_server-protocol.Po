@@ -750,7 +750,8 @@ ipc_server-protocol.o: protocol.cpp /usr/include/stdc-predef.h \
  /usr/include/signal.h /usr/include/bits/signum.h \
  /usr/include/bits/siginfo.h /usr/include/bits/sigaction.h \
  /usr/include/bits/sigcontext.h /usr/include/bits/sigstack.h \
- /usr/include/sys/ucontext.h /usr/include/bits/sigthread.h
+ /usr/include/sys/ucontext.h /usr/include/bits/sigthread.h \
+ ../inc/HCNetSDK.h
 
 /usr/include/stdc-predef.h:
 
@@ -2395,3 +2396,5 @@ ipc_server-protocol.o: protocol.cpp /usr/include/stdc-predef.h \
 /usr/include/sys/ucontext.h:
 
 /usr/include/bits/sigthread.h:
+
+../inc/HCNetSDK.h:

@@ -1548,8 +1548,8 @@ ipc_server-ipc-server.o: ipc-server.cpp /usr/include/stdc-predef.h \
  /usr/local/include/boost/type_traits/has_trivial_move_assign.hpp \
  /usr/local/include/boost/type_traits/has_nothrow_assign.hpp \
  /usr/local/include/boost/circular_buffer/space_optimized.hpp \
- ../inc/mission.h ../inc/CaptureDevice.h ../inc/SpeedDomeCam.h \
- ../inc/HIKCam.h ../inc/HCNetSDK.h ../inc/protocol_CfgClient.h \
+ ../inc/HCNetSDK.h ../inc/mission.h ../inc/CaptureDevice.h \
+ ../inc/SpeedDomeCam.h ../inc/HIKCam.h ../inc/protocol_CfgClient.h \
  ../inc/service_pool.h ../inc/config_session.h ../inc/sql_conn.h \
  /usr/local/include/boost/format.hpp \
  /usr/local/include/boost/format/detail/compat_workarounds.hpp \
@@ -5024,6 +5024,8 @@ ipc_server-ipc-server.o: ipc-server.cpp /usr/include/stdc-predef.h \
 
 /usr/local/include/boost/circular_buffer/space_optimized.hpp:
 
+../inc/HCNetSDK.h:
+
 ../inc/mission.h:
 
 ../inc/CaptureDevice.h:
@@ -5031,8 +5033,6 @@ ipc_server-ipc-server.o: ipc-server.cpp /usr/include/stdc-predef.h \
 ../inc/SpeedDomeCam.h:
 
 ../inc/HIKCam.h:
-
-../inc/HCNetSDK.h:
 
 ../inc/protocol_CfgClient.h:
 

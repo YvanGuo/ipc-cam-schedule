@@ -797,9 +797,9 @@ ipc_server-sql_conn.o: sql_conn.cpp /usr/include/stdc-predef.h \
  /usr/include/bits/siginfo.h /usr/include/bits/sigaction.h \
  /usr/include/bits/sigcontext.h /usr/include/bits/sigstack.h \
  /usr/include/sys/ucontext.h /usr/include/bits/sigthread.h \
- ../inc/SpeedDomeCam.h /usr/local/include/boost/bind.hpp \
- /usr/local/include/boost/bind/bind.hpp /usr/local/include/boost/ref.hpp \
- /usr/local/include/boost/core/ref.hpp \
+ ../inc/HCNetSDK.h ../inc/SpeedDomeCam.h \
+ /usr/local/include/boost/bind.hpp /usr/local/include/boost/bind/bind.hpp \
+ /usr/local/include/boost/ref.hpp /usr/local/include/boost/core/ref.hpp \
  /usr/local/include/boost/mem_fn.hpp \
  /usr/local/include/boost/bind/mem_fn.hpp \
  /usr/local/include/boost/get_pointer.hpp \
@@ -1587,8 +1587,8 @@ ipc_server-sql_conn.o: sql_conn.cpp /usr/include/stdc-predef.h \
  /usr/local/include/boost/thread/executors/generic_executor_ref.hpp \
  /usr/local/include/boost/thread/detail/atomic_undef_macros.hpp \
  /usr/local/include/boost/thread/detail/atomic_redef_macros.hpp \
- ../inc/mission.h ../inc/HIKCam.h ../inc/HCNetSDK.h \
- ../inc/protocol_CfgClient.h /usr/local/include/boost/typeof/typeof.hpp \
+ ../inc/mission.h ../inc/HIKCam.h ../inc/protocol_CfgClient.h \
+ /usr/local/include/boost/typeof/typeof.hpp \
  /usr/local/include/boost/typeof/message.hpp \
  /usr/local/include/boost/typeof/native.hpp
 
@@ -3324,6 +3324,8 @@ ipc_server-sql_conn.o: sql_conn.cpp /usr/include/stdc-predef.h \
 
 /usr/include/bits/sigthread.h:
 
+../inc/HCNetSDK.h:
+
 ../inc/SpeedDomeCam.h:
 
 /usr/local/include/boost/bind.hpp:
@@ -4959,8 +4961,6 @@ ipc_server-sql_conn.o: sql_conn.cpp /usr/include/stdc-predef.h \
 ../inc/mission.h:
 
 ../inc/HIKCam.h:
-
-../inc/HCNetSDK.h:
 
 ../inc/protocol_CfgClient.h:
 

@@ -3,6 +3,7 @@
 #include "protocol.h"
 #include "SpeedDomeCam.h"
 #include "CaptureDevice.h"
+
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <boost/lexical_cast.hpp>
@@ -39,7 +40,8 @@ public:
 	
 	int8_t start();
 	int8_t stop();
-	int8_t reload();
+	int8_t reload_Preset();
+	int8_t threeD_Request(ThreeDirReq &tdr);
 
 	
 	int8_t init(tcp::socket *socket_, LoginInfo *para_loginInfo);

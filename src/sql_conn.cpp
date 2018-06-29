@@ -369,6 +369,11 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName){
 				 G_preset.illparkpara.Area2[9].y = boost::lexical_cast<uint32_t>(sColVal);
  
 			  }// Areax[9]
+			  else if("fScaleScreen" == sColName){
+ 
+				 G_preset.illparkpara.fScaleScreen = boost::lexical_cast<float>(sColVal);
+ 
+			  }
 			  else if("rectLeft" == sColName){
  
 				 G_preset.rect.left = boost::lexical_cast<uint32_t>(sColVal);

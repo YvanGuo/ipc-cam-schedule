@@ -29,7 +29,7 @@ int32_t CSpeedDomeCam::TurnPTZPreset(int32_t presetNum)
 
 }
 
-int32_t CSpeedDomeCam::PTZSelZoomIn(PointFrame *frame)
+int32_t CSpeedDomeCam::PTZSelZoomIn(ThreeDirReq &tdr)
 {
 
 

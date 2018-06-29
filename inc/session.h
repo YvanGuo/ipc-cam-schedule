@@ -80,10 +80,10 @@ public:
             }
 			for(int i=0; i<bytes_transferred; i++){
 
-				//printf("[1]%x,", data_[i]);
+				printf("%x,", data_[i]);
 			}
 
-			//printf("\r\n");
+			printf("\r\n");
 
 			CProtocol protocol;
 			ProtocolHead head;
@@ -186,7 +186,10 @@ public:
 
 						mission = MissionGet(capDev.missionNum);
 
-						mission->getFreeSDC(capDev.SpdDomeCam);
+						if(-1 == mission->getFreeSDC(capDev.SpdDomeCam)){
+
+							printf("no valid SDC\r\n");
+						}
 						capDev.missionStatus = MISSION_READY;
 						mission->updateCapdev(&capDev);
 						
@@ -257,6 +260,118 @@ public:
 		
 					
 				}
+				else if(7 == head.type){ //特写(3D定位)请求
+
+					uint8_t *p = data_+5;
+
+					printf("3d respone\r\n");
+				
+					printf("result = %d\r\n",*p);
+					p++;
+					printf("report type = %d\r\n",*p);
+					p++;
+					printf("erroCode = %d\r\n",*(uint32_t *)p);
+
+					status = 0;
+					ThreeDirReq tdr;
+
+					protocol.ParseTDR(data_, bytes_transferred, tdr);
+
+					int res = 1;
+
+				    capDev.threeD_Request(tdr);
+
+					printf("tdr.ratioHeight = %d\r\n", tdr.ratioHeight);
+					printf("tdr.ratioWidth = %d\r\n", tdr.ratioWidth);
+					printf("tdr.zoombottom = %d\r\n", tdr.zoombottom);
+					printf("tdr.zoomLeft = %d\r\n", tdr.zoomLeft);
+					printf("tdr.zoomRight = %d\r\n", tdr.zoomRight);
+					printf("tdr.zoomTop = %d\r\n", tdr.zoomTop);
+
+					int frameLen = protocol.PackageResponeFrame(data_write, RIO_RESP, res);
+					if(frameLen > 0){
+
+						boost::asio::async_write(socket_, boost::asio::buffer(data_write, frameLen),  boost::bind(&CCaptureDevSession::handle_write, this,
+						   boost::asio::placeholders::error));
+					}
+					
+				}
+				else if(9 == head.type){ //违停结果
+
+					uint8_t *p = data_+5;
+
+					printf("illegal result\r\n");
+				
+					printf("result = %d\r\n",*p);
+					p++;
+					printf("report type = %d\r\n",*p);
+					p++;
+					printf("erroCode = %d\r\n",*(uint32_t *)p);
+
+					status = 0;
+					capDev.reload_Preset();
+					
+				}
+				else if(11 == head.type){ //违停结果
+
+					uint8_t *p = data_+5;
+
+					printf("illegal result\r\n");
+				
+					printf("result = %d\r\n",*p);
+					p++;
+					printf("report type = %d\r\n",*p);
+					p++;
+					printf("erroCode = %d\r\n",*(uint32_t *)p);
+
+					int frameLen = protocol.PackageResponeFrame(data_write, ILLEGAL_PART_POS_RESP, 0);
+					if(frameLen > 0){
+
+						boost::asio::async_write(socket_, boost::asio::buffer(data_write, frameLen),  boost::bind(&CCaptureDevSession::handle_write, this,
+						   boost::asio::placeholders::error));
+					}
+					
+				}
+				else if(17 == head.type){ //违停结果
+
+					uint8_t *p = data_+5;
+
+					printf("illegal position result\r\n");
+				
+					printf("result = %d\r\n",*p);
+					p++;
+					printf("report type = %d\r\n",*p);
+					p++;
+					printf("erroCode = %d\r\n",*(uint32_t *)p);
+
+					int frameLen = protocol.PackageResponeFrame(data_write, DEV_STATUS_RESP, 0);
+					if(frameLen > 0){
+
+						boost::asio::async_write(socket_, boost::asio::buffer(data_write, frameLen),  boost::bind(&CCaptureDevSession::handle_write, this,
+						   boost::asio::placeholders::error));
+					}
+					
+				}
+				else if(21 == head.type){ //违停结果
+
+					uint8_t *p = data_+5;
+
+					printf("illegal position result\r\n");
+				
+					printf("result = %d\r\n",*p);
+					p++;
+					printf("report type = %d\r\n",*p);
+					p++;
+					printf("erroCode = %d\r\n",*(uint32_t *)p);
+
+					int frameLen = protocol.PackageResponeFrame(data_write, ILLEGAL_PART_POS_RESP, 0);
+					if(frameLen > 0){
+
+						boost::asio::async_write(socket_, boost::asio::buffer(data_write, frameLen),  boost::bind(&CCaptureDevSession::handle_write, this,
+						   boost::asio::placeholders::error));
+					}
+					
+				}
 				else if(3 == head.type){//  违停抓拍调度。
 
 					uint8_t *p = data_+5;
@@ -315,7 +430,12 @@ public:
         }
         else
         {
-            delete this;
+        	cerr<<"session hand read (): error.message:"<<error.message()<<'\n';  
+			capDev.stop();
+            if("Operation canceled\r\n" == error.message()){
+
+				delete this;
+			}
         }
     }
 
@@ -327,7 +447,12 @@ public:
         }
         else
         {
-            delete this;
+        	cerr<<"session handle_write (): error.message:"<<error.message()<<'\n';  
+        	capDev.stop();
+            if("Operation canceled\r\n" == error.message()){
+
+				delete this;
+			}
         }
     }
 

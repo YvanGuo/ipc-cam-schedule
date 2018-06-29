@@ -748,7 +748,7 @@ ipc_server-mission.o: mission.cpp /usr/include/stdc-predef.h \
  /usr/include/bits/siginfo.h /usr/include/bits/sigaction.h \
  /usr/include/bits/sigcontext.h /usr/include/bits/sigstack.h \
  /usr/include/sys/ucontext.h /usr/include/bits/sigthread.h \
- ../inc/CaptureDevice.h ../inc/SpeedDomeCam.h \
+ ../inc/HCNetSDK.h ../inc/CaptureDevice.h ../inc/SpeedDomeCam.h \
  /usr/local/include/boost/bind.hpp /usr/local/include/boost/bind/bind.hpp \
  /usr/local/include/boost/ref.hpp /usr/local/include/boost/core/ref.hpp \
  /usr/local/include/boost/mem_fn.hpp \
@@ -1553,8 +1553,8 @@ ipc_server-mission.o: mission.cpp /usr/include/stdc-predef.h \
  /usr/local/include/boost/thread/executors/generic_executor_ref.hpp \
  /usr/local/include/boost/thread/detail/atomic_undef_macros.hpp \
  /usr/local/include/boost/thread/detail/atomic_redef_macros.hpp \
- ../inc/HIKCam.h ../inc/HCNetSDK.h ../inc/protocol_CfgClient.h \
- ../inc/mission_config.h /usr/local/include/boost/property_tree/ptree.hpp \
+ ../inc/HIKCam.h ../inc/protocol_CfgClient.h ../inc/mission_config.h \
+ /usr/local/include/boost/property_tree/ptree.hpp \
  /usr/local/include/boost/property_tree/ptree_fwd.hpp \
  /usr/local/include/boost/optional/optional_fwd.hpp \
  /usr/local/include/boost/property_tree/string_path.hpp \
@@ -3341,6 +3341,8 @@ ipc_server-mission.o: mission.cpp /usr/include/stdc-predef.h \
 
 /usr/include/bits/sigthread.h:
 
+../inc/HCNetSDK.h:
+
 ../inc/CaptureDevice.h:
 
 ../inc/SpeedDomeCam.h:
@@ -5010,8 +5012,6 @@ ipc_server-mission.o: mission.cpp /usr/include/stdc-predef.h \
 /usr/local/include/boost/thread/detail/atomic_redef_macros.hpp:
 
 ../inc/HIKCam.h:
-
-../inc/HCNetSDK.h:
 
 ../inc/protocol_CfgClient.h:
 

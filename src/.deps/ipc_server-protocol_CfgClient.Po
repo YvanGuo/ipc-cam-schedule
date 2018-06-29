@@ -749,9 +749,10 @@ ipc_server-protocol_CfgClient.o: protocol_CfgClient.cpp \
  /usr/include/bits/siginfo.h /usr/include/bits/sigaction.h \
  /usr/include/bits/sigcontext.h /usr/include/bits/sigstack.h \
  /usr/include/sys/ucontext.h /usr/include/bits/sigthread.h \
- ../inc/protocol.h ../inc/CaptureDevice.h ../inc/SpeedDomeCam.h \
- /usr/local/include/boost/bind.hpp /usr/local/include/boost/bind/bind.hpp \
- /usr/local/include/boost/ref.hpp /usr/local/include/boost/core/ref.hpp \
+ ../inc/protocol.h ../inc/HCNetSDK.h ../inc/CaptureDevice.h \
+ ../inc/SpeedDomeCam.h /usr/local/include/boost/bind.hpp \
+ /usr/local/include/boost/bind/bind.hpp /usr/local/include/boost/ref.hpp \
+ /usr/local/include/boost/core/ref.hpp \
  /usr/local/include/boost/mem_fn.hpp \
  /usr/local/include/boost/bind/mem_fn.hpp \
  /usr/local/include/boost/get_pointer.hpp \
@@ -3179,6 +3180,8 @@ ipc_server-protocol_CfgClient.o: protocol_CfgClient.cpp \
 /usr/include/bits/sigthread.h:
 
 ../inc/protocol.h:
+
+../inc/HCNetSDK.h:
 
 ../inc/CaptureDevice.h:
 
