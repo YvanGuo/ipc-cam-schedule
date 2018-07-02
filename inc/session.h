@@ -29,7 +29,7 @@ using boost::asio::ip::tcp;
 
 boost::mutex cout_mtx;
 
-enum {MAX_PACKET_LEN = 8421};
+enum {MAX_PACKET_LEN = 84210};
 
 class CCaptureDevSession
 {
@@ -39,6 +39,9 @@ public:
         , recv_times(0)
     {
     	memset(data_, 0 ,MAX_PACKET_LEN);
+		picData = new unsigned char [1024*1024*10];
+		memset(picData, 0, 1024*1024*10);
+		curPicDataPos = picData;
     }
 
     virtual ~CCaptureDevSession()
@@ -78,16 +81,82 @@ public:
                 oldtime = nowtime;
                 count111 = 0;
             }
-			for(int i=0; i<bytes_transferred; i++){
+			//for(int i=0; i<bytes_transferred; i++){
 
-				printf("%x,", data_[i]);
-			}
+				//printf("%x,", data_[i]);
+			//}
 
-			printf("\r\n");
-
+			printf("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbytes_transferred = %d\r\n", bytes_transferred);
 			CProtocol protocol;
 			ProtocolHead head;
 			LoginInfo loginInfo;
+
+			if(1 == recvCaprure){
+
+				rcvdSzie += bytes_transferred;
+				printf("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbytes_transferred = %d, rcvdSzie = %d, res.frameSize = %d\r\n", bytes_transferred, rcvdSzie, res.frameSize);
+				memcpy(curPicDataPos, data_, bytes_transferred);
+				curPicDataPos += bytes_transferred;
+				if(curPicDataPos-picData > res.frameSize){
+
+					printf("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbytes_t curPicDataPos-picData = %d\r\n", curPicDataPos-picData);
+					protocol.ParseSnapResultPic(picData, curPicDataPos-picData, res);
+
+					memset(picData, 0, 1024*1024*10);
+					recvCaprure = 0;
+					rcvdSzie = 0;
+				}
+			 socket_.async_read_some(boost::asio::buffer(data_, MAX_PACKET_LEN),
+				   boost::bind(&CCaptureDevSession::handle_read, this,
+				   boost::asio::placeholders::error,
+				   boost::asio::placeholders::bytes_transferred));
+
+			 return;
+				#if 0
+				if(0 == res.PicSize[res.curRecvPicNum]){
+
+					char *p = picData;
+					char capTime[24];
+					memcpy(capTime, picData, 8);
+					p += 8;
+
+					res.PicSize[res.curRecvPicNum] = *((int32_t *)p);
+					p += sizeof(int32_t);
+
+					//char *pic = new char(picSize);
+					int fd = open(capTime, O_CREAT | O_RDWR | O_APPEND);		
+					if(fd > 0){
+
+						rcvdSzie += write(fd, p, picSize);
+						printf("write pic rcvdSzie = %d\r\n", rcvdSzie);
+						close(fd);
+					}
+
+					memset(picData, 0, curPicDataPos-picData);
+				
+				}
+				else{
+
+					int fd = open(capTime, O_CREAT | O_RDWR | O_APPEND);		
+					if(fd > 0){
+
+						int left = res.PicSize[res.curRecvPicNum] - rcvdSzie;
+						rcvdSzie += write(fd, picData, MIN(left, bytes_transferred));
+						if(bytes_transferred > left){
+
+
+						}
+						res.curRecvPicNum++;
+						
+					    printf("write pic rcvdSzie = %d\r\n", rcvdSzie);
+						close(fd);
+					}
+
+				}
+				#endif
+			}
+			
+			
 				
 			protocol.ParseFrameHead(data_, bytes_transferred, &head);
 
@@ -323,8 +392,31 @@ public:
 					printf("report type = %d\r\n",*p);
 					p++;
 					printf("erroCode = %d\r\n",*(uint32_t *)p);
+					
 
-					int frameLen = protocol.PackageResponeFrame(data_write, ILLEGAL_PART_POS_RESP, 0);
+					protocol.ParseSnapResult(data_, bytes_transferred, res);
+					printf("res.camNum = %s\r\n", res.camNum);
+					printf("res.plateVariety = %d\r\n", res.plateVariety);
+					printf("res.plateColor = %d\r\n", res.plateColor);
+					printf("res.plateNum = %s\r\n", res.plateNum);
+					printf("res.picNum= %d\r\n", res.picNum);
+					printf("res.frameSize= %d\r\n", res.frameSize);
+
+					res.rcvdSzie = bytes_transferred;
+					if(res.frameSize > 0 && res.frameSize < 1024*1024*10){
+
+						
+					
+					
+						curPicDataPos = picData;
+						memcpy(curPicDataPos, data_, bytes_transferred);
+						curPicDataPos += bytes_transferred;
+						rcvdSzie += bytes_transferred;
+						
+						recvCaprure = 1;
+					}
+
+					int frameLen = protocol.PackageResponeFrame(data_write, SNAP_RESP, 0);
 					if(frameLen > 0){
 
 						boost::asio::async_write(socket_, boost::asio::buffer(data_write, frameLen),  boost::bind(&CCaptureDevSession::handle_write, this,
@@ -430,12 +522,32 @@ public:
         }
         else
         {
-        	cerr<<"session hand read (): error.message:"<<error.message()<<'\n';  
-			capDev.stop();
-            if("Operation canceled\r\n" == error.message()){
+        	cerr<<"[session hand read] (): error.message:"<<error.message()<<'\n';  
+			//sleep(5);
+			if(freeThis){
 
+				printf("[session hand read]: delete this\r\n");
+				capDev.stop();
+				printf("waiting mission completed....\r\n");
+
+				while(1){
+
+					//if(MISSION_COMPLETED == capDev.missionStatus \
+					//	|| MISSION_FAILD == capDev.missionStatus){
+
+
+						printf("mission completed!\r\n");
+						break;
+					//}
+					sleep(1);
+				}
+				
+				freeThis = 0;
+				delete [] picData;
 				delete this;
+				
 			}
+			
         }
     }
 
@@ -449,9 +561,17 @@ public:
         {
         	cerr<<"session handle_write (): error.message:"<<error.message()<<'\n';  
         	capDev.stop();
-            if("Operation canceled\r\n" == error.message()){
+            if(this){
 
-				delete this;
+				printf("[session  handle_write]: delete this \r\n");
+
+				if(freeThis){
+
+					freeThis = 0;
+					delete [] picData;
+					delete this;
+				}
+				
 			}
         }
     }
@@ -466,12 +586,20 @@ public:
 private:
     tcp::socket socket_;
     unsigned char data_[MAX_PACKET_LEN];
+	unsigned char *picData;
+	unsigned char *curPicDataPos;
 	char data_write[MAX_PACKET_LEN];
     int recv_times;
 	int8_t status = 1;
 
+	int8_t freeThis = 1;
+
 	CMission *mission;
 	CCaptureDevice capDev;
+	IlligalProcResult res;
+	int32_t rcvdSzie;
+
+	int8_t recvCaprure = 0;
 };
 
 

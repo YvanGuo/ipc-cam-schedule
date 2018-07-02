@@ -64,21 +64,25 @@ public:
 
     void handle_accept(CCaptureDevSession* new_session, const boost::system::error_code& error)
     {
+    
+    	printf("[handle_accept]:new session connect\r\n");
+		
         if (!error)
         {
             new_session->start();
+			
+			new_session = new CCaptureDevSession(io_service_pool_.get_io_service());
+			acceptor_.async_accept(new_session->socket(),
+			boost::bind(&server::handle_accept, this, new_session, boost::asio::placeholders::error));
         }
         else
         {
+        	printf("[handle_accept]: invalid new session connect\r\n");
             delete new_session;
         }
 
-		printf("[handle_accept]:new session connect\r\n");
 		
-        new_session = new CCaptureDevSession(io_service_pool_.get_io_service());
-        acceptor_.async_accept(new_session->socket(),
-            boost::bind(&server::handle_accept, this, new_session, boost::asio::placeholders::error));
-
+       
 	
 	}
 
@@ -112,6 +116,7 @@ private:
 
     io_service_pool io_service_pool_;
     tcp::acceptor acceptor_;
+	
 };
 
 

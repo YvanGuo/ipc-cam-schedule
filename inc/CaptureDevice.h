@@ -2,18 +2,18 @@
 
 #include "protocol.h"
 #include "SpeedDomeCam.h"
-#include "CaptureDevice.h"
 
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/thread.hpp>
+
 #include <list> 
 #include <map> 
 
 #include <boost/thread/mutex.hpp>  
 using namespace std;  
-using namespace boost;  
+//using namespace boost;  
 using boost::asio::ip::tcp;
 
 
@@ -22,7 +22,8 @@ typedef enum STATUS{
 	MISSION_FAILD = 0,
 	MISSION_COMPLETED,
 	MISSION_PROCESSING,
-	MISSION_READY
+	MISSION_READY,
+	MISSION_EXIT,
 
 }STATUS;
 
@@ -32,6 +33,7 @@ public:
 	CCaptureDevice(){
 
 		isOnline = 0;
+		run = 1;
 		missionStatus = MISSION_READY;
 		memset(&loginInfo, 0, sizeof(LoginInfo));
 		//memset(&m_sdcCfg, 0, sizeof(SDCcfg));
@@ -67,15 +69,15 @@ public:
 //	SDCcfg m_sdcCfg;
 	
 	boost::shared_ptr<CSpeedDomeCam> SpdDomeCam;
-		
+
+private:	
 	boost::shared_ptr<boost::asio::deadline_timer> timer;
+	
 
 	tcp::socket *m_socket;
 
 	int8_t run;
 	CProtocol protocol;
-
-//	char data_write[4096];
-	
+	//boost::shared_ptr<boost::asio::io_service> ioTimer; 
 };
 
