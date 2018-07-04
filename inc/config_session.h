@@ -33,6 +33,9 @@ public:
         , recv_times(0)
     {
     	memset(data_, 0 ,MAX_PACKET_LEN);
+		run = 1;
+		curCapResult = 0;
+		freeThis = 1;
     }
 
     virtual ~CConfigSession()
@@ -47,6 +50,11 @@ public:
 
 	void updateMissionInfo()
     {
+    	if(!run){
+			timer->cancel();
+			return;
+		}
+		
 		update();
 
 		timer->expires_at(timer->expires_at() + boost::posix_time::seconds(3));  
@@ -94,7 +102,7 @@ public:
 
 		int frameLen = prot.packageSDCrespone(data_write, MAX_PACKET_LEN, 1);
 		//printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
-		boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write2, this,
+		boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write, this,
 				   boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
 		//boost::asio::write (socket_, boost::asio::buffer(data_write, frameLen), boost::asio::placeholders::error)
 
@@ -104,7 +112,7 @@ public:
 
 			int frameLen = prot.packageGroupInfo(data_write, MAX_PACKET_LEN, iter->second.missionNum);
 			//printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
-			boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write2, this,
+			boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write, this,
 					   boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
 
 		}
@@ -119,7 +127,7 @@ public:
 							
 				int frameLen = prot.packageCapDevinfo(data_write, MAX_PACKET_LEN, &(iter->second.capDev[i]));
 				//printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
-				boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write2, this,
+				boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write, this,
 						   boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
 
 			}
@@ -128,7 +136,7 @@ public:
 
 				int frameLen = prot.packageSDCinfo(data_write, MAX_PACKET_LEN, &(iter->second.SpdDomeCam[i]->m_sdcCfg));
 				//printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
-							boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write2, this,
+							boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write, this,
 									   boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
 
 			}
@@ -138,19 +146,19 @@ public:
 		}
 
 
-			//printf("[CConfigSession handle_read]:G_missionUnstart.totalCapDev= %d\r\n", G_missionUnstart.totalCapDev);
+			printf("[CConfigSession handle_read]:G_missionUnstart.totalCapDev= %d\r\n", G_missionUnstart.totalCapDev);
 			for(int i=0; i<G_missionUnstart.totalCapDev; i++){
 							
 				int frameLen = prot.packageCapDevinfo(data_write, MAX_PACKET_LEN, &(G_missionUnstart.capDev[i]));
 				//printf("[CConfigSession handle_read]:frameLen = %d\r\n", frameLen);
-							boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write2, this,
+							boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write, this,
 									   boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
 
 			}
 
 			
-			//printf("[CConfigSession handle_read] packageCapDevinfo completed ~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n");
-			//printf("[CConfigSession handle_read]:G_missionUnstart.totalSpdDomeCam= %d\r\n", G_missionUnstart.totalSpdDomeCam);
+			printf("[CConfigSession handle_read] packageCapDevinfo completed ~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n");
+			printf("[CConfigSession handle_read]:G_missionUnstart.totalSpdDomeCam= %d\r\n", G_missionUnstart.totalSpdDomeCam);
 
 			for(int i=0; i<G_missionUnstart.totalSpdDomeCam; i++){
 
@@ -161,12 +169,65 @@ public:
 				//if(socket_){
 
 				
-					boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write2, this,
+					boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write, this,
 													   boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
 
 				//}//
 							
 			}
+
+			
+			#if 0
+			for (iter = missions->begin(); iter != missions->end(); iter++) {
+			
+				std::map<string, vector<IlligalProcResult> >::iterator  map_illi_iter;
+				map_illi_iter = iter->second.illegalCapVectorMap.begin(); 
+			
+				printf("222222222222222222222222222222222222222222222222222222222222222222iter->second.illegalCapVectorMap.size = %d\r\n", iter->second.illegalCapVectorMap.size());
+				for (;map_illi_iter != iter->second.illegalCapVectorMap.end(); map_illi_iter++) {
+
+					vector<IlligalProcResult>::iterator mapvec_itor = map_illi_iter->second.begin();   
+					printf("222222222222222222222222222222222222222222222222222222222222222222mission->illegalCapVectorMap[res.camNum].size = %d\r\n", map_illi_iter->second.size());
+
+			        for ( ; mapvec_itor !=  map_illi_iter->second.end(); mapvec_itor++)   
+
+			        {   
+
+						int frameLen = prot.packageCapResultInfo(data_write, MAX_PACKET_LEN, *mapvec_itor);
+						printf("[CConfigSession handle_read]:packageCapResultInfo frameLen = %d\r\n", frameLen);
+						boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write2, this,
+								   boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
+						usleep(100);
+
+			        } 
+				}
+				 
+			}
+			#endif
+
+	
+				vector<IlligalProcResult>::iterator mapvec_itor = G_illegalCapVectorMap.begin();   
+				printf("222222222222222222222222222222222222222222222222222222222222222222mission->illegalCapVectorMap[res.camNum].size = %d\r\n", G_illegalCapVectorMap.size());
+				int i=0 ;
+		        for (; mapvec_itor != G_illegalCapVectorMap.end(); mapvec_itor++,i++)   
+
+		        {   
+					if(i < curCapResult){
+
+						i++;
+						
+					}else{
+
+						int frameLen = prot.packageCapResultInfo(data_write, MAX_PACKET_LEN, *mapvec_itor);
+						printf("[CConfigSession handle_read]:packageCapResultInfo frameLen = %d\r\n", frameLen);
+						boost::asio::async_write(socket_, boost::asio::buffer(data_write, SEND_LEN),  boost::bind(&CConfigSession::handle_write, this,
+								   boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
+						//usleep(100);
+					}
+					
+
+		        } 
+				curCapResult = i;
 			
 			//printf("[CConfigSession handle_read]:G_missionUnstart.totalSpdDomeCam2= %d\r\n", G_missionUnstart.totalSpdDomeCam);
 
@@ -242,6 +303,12 @@ public:
 				printf("req dts_num = %d---------------------------------------------\r\n",req.dts_num);
 				printf("req num = %s---------------------------------------------\r\n",req.num.c_str());
 
+				if("" == req.num){
+
+					printf("req num enpty\r\n");
+					return;
+				}
+				
 				for(int i=0; i<bytes_transferred; i++){
 				
 					printf("%x,", data_[i]);
@@ -309,15 +376,25 @@ public:
         }
         else
         {
-            delete this;
+        	run = 0;
+			
+         	cerr<<"pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp read(): error.message:"<<error.message()<<'\n';  
+            if(freeThis){
+				
+				freeThis = 0;
+				printf("read delete this\r\n");
+            	//delete this;
+
+			}
         }
     }
 
-    void handle_write(const boost::system::error_code& error)
+    void handle_write(const boost::system::error_code& error, size_t bytes_transferred)
     {
         if (!error)
         {
            // start();
+           //printf("handle_write !error \r\n");
            socket_.async_read_some(boost::asio::buffer(data_, MAX_PACKET_LEN),
             boost::bind(&CConfigSession::handle_read, this,
             boost::asio::placeholders::error,
@@ -325,7 +402,18 @@ public:
         }
         else
         {
-            delete this;
+       	 	run = 0;
+			///timer->cancel();
+			//timer_io.stop();
+			
+         	cerr<<"pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp wrire1(): error.message:"<<error.message()<<'\n';  
+            if(freeThis){
+
+				freeThis = 0;
+				printf("wrire1 delete this\r\n");
+            	//delete this;
+
+			}
         }
     }
 
@@ -337,10 +425,19 @@ public:
 			//printf("[handle_write2]:bytes_transferred = %d\r\n", bytes_transferred);
 		 }else
          {
-         	cerr<<"pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp wrire(): error.message:"<<error.message()<<'\n';  
-			timer->cancel();
-			timer_io.stop();
-            delete this;
+       	  	run = 0;
+         	cerr<<"pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp wrire2(): error.message:"<<error.message()<<'\n';  
+			//timer->cancel();
+			//timer_io.stop();
+			if(freeThis){
+
+				
+
+				freeThis = 0;
+				
+            	//delete this;
+
+			}
          }
     }
 
@@ -351,6 +448,9 @@ private:
 	int8_t data_write[MAX_PACKET_LEN];
     int recv_times;
 	boost::shared_ptr<boost::asio::deadline_timer> timer;
+	int run;
+	int curCapResult;
+	int freeThis;
 
 };
 

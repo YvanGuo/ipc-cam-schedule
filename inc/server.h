@@ -65,7 +65,7 @@ public:
     void handle_accept(CCaptureDevSession* new_session, const boost::system::error_code& error)
     {
     
-    	printf("[handle_accept]:new session connect\r\n");
+    	printf("[handle_accept]:-------------------------------------------------------------------------new session connect\r\n");
 		
         if (!error)
         {
@@ -97,7 +97,7 @@ public:
             delete new_session;
         }
 
-		printf("[handle_accept_cfg]:new session connect\r\n");
+		printf("[handle_accept_cfg]:*********************************************************************8new session connect\r\n");
 		
         new_session = new CConfigSession(io_service_pool_.get_io_service());
         acceptor_.async_accept(new_session->socket(),

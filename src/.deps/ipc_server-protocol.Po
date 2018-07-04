@@ -22,7 +22,14 @@ ipc_server-protocol.o: protocol.cpp /usr/include/stdc-predef.h \
  /usr/include/bits/sockaddr.h /usr/include/asm/socket.h \
  /usr/include/asm-generic/socket.h /usr/include/asm/sockios.h \
  /usr/include/asm-generic/sockios.h /usr/include/bits/in.h \
- ../inc/protocol.h /usr/include/c++/4.8.2/iostream \
+ /usr/include/iconv.h /usr/include/stdlib.h /usr/include/bits/waitflags.h \
+ /usr/include/bits/waitstatus.h /usr/include/alloca.h \
+ /usr/include/bits/stdlib-float.h /usr/include/unistd.h \
+ /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
+ /usr/include/bits/confname.h /usr/include/getopt.h /usr/include/fcntl.h \
+ /usr/include/bits/fcntl.h /usr/include/bits/fcntl-linux.h \
+ /usr/include/bits/stat.h /usr/include/sys/stat.h ../inc/protocol.h \
+ /usr/include/c++/4.8.2/iostream \
  /usr/include/c++/4.8.2/x86_64-redhat-linux/bits/c++config.h \
  /usr/include/c++/4.8.2/x86_64-redhat-linux/bits/os_defines.h \
  /usr/include/c++/4.8.2/x86_64-redhat-linux/bits/cpu_defines.h \
@@ -90,14 +97,9 @@ ipc_server-protocol.o: protocol.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/4.8.2/cstddef \
  /usr/local/include/boost/config/detail/select_stdlib_config.hpp \
  /usr/local/include/boost/config/stdlib/libstdcpp3.hpp \
- /usr/include/unistd.h /usr/include/bits/posix_opt.h \
- /usr/include/bits/environments.h /usr/include/bits/confname.h \
- /usr/include/getopt.h \
  /usr/local/include/boost/config/detail/select_platform_config.hpp \
  /usr/local/include/boost/config/platform/linux.hpp \
- /usr/include/c++/4.8.2/cstdlib /usr/include/stdlib.h \
- /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
- /usr/include/alloca.h /usr/include/bits/stdlib-float.h \
+ /usr/include/c++/4.8.2/cstdlib \
  /usr/local/include/boost/config/detail/posix_features.hpp \
  /usr/local/include/boost/config/detail/suffix.hpp \
  /usr/local/include/boost/config/helper_macros.hpp \
@@ -745,8 +747,6 @@ ipc_server-protocol.o: protocol.cpp /usr/include/stdc-predef.h \
  /usr/local/include/boost/chrono/ceil.hpp \
  /usr/local/include/boost/thread/pthread/pthread_mutex_scoped_lock.hpp \
  /usr/local/include/boost/thread/pthread/pthread_helpers.hpp \
- /usr/include/sys/stat.h /usr/include/bits/stat.h /usr/include/fcntl.h \
- /usr/include/bits/fcntl.h /usr/include/bits/fcntl-linux.h \
  /usr/include/signal.h /usr/include/bits/signum.h \
  /usr/include/bits/siginfo.h /usr/include/bits/sigaction.h \
  /usr/include/bits/sigcontext.h /usr/include/bits/sigstack.h \
@@ -1084,6 +1084,38 @@ ipc_server-protocol.o: protocol.cpp /usr/include/stdc-predef.h \
 
 /usr/include/bits/in.h:
 
+/usr/include/iconv.h:
+
+/usr/include/stdlib.h:
+
+/usr/include/bits/waitflags.h:
+
+/usr/include/bits/waitstatus.h:
+
+/usr/include/alloca.h:
+
+/usr/include/bits/stdlib-float.h:
+
+/usr/include/unistd.h:
+
+/usr/include/bits/posix_opt.h:
+
+/usr/include/bits/environments.h:
+
+/usr/include/bits/confname.h:
+
+/usr/include/getopt.h:
+
+/usr/include/fcntl.h:
+
+/usr/include/bits/fcntl.h:
+
+/usr/include/bits/fcntl-linux.h:
+
+/usr/include/bits/stat.h:
+
+/usr/include/sys/stat.h:
+
 ../inc/protocol.h:
 
 /usr/include/c++/4.8.2/iostream:
@@ -1248,31 +1280,11 @@ ipc_server-protocol.o: protocol.cpp /usr/include/stdc-predef.h \
 
 /usr/local/include/boost/config/stdlib/libstdcpp3.hpp:
 
-/usr/include/unistd.h:
-
-/usr/include/bits/posix_opt.h:
-
-/usr/include/bits/environments.h:
-
-/usr/include/bits/confname.h:
-
-/usr/include/getopt.h:
-
 /usr/local/include/boost/config/detail/select_platform_config.hpp:
 
 /usr/local/include/boost/config/platform/linux.hpp:
 
 /usr/include/c++/4.8.2/cstdlib:
-
-/usr/include/stdlib.h:
-
-/usr/include/bits/waitflags.h:
-
-/usr/include/bits/waitstatus.h:
-
-/usr/include/alloca.h:
-
-/usr/include/bits/stdlib-float.h:
 
 /usr/local/include/boost/config/detail/posix_features.hpp:
 
@@ -2607,16 +2619,6 @@ ipc_server-protocol.o: protocol.cpp /usr/include/stdc-predef.h \
 /usr/local/include/boost/thread/pthread/pthread_mutex_scoped_lock.hpp:
 
 /usr/local/include/boost/thread/pthread/pthread_helpers.hpp:
-
-/usr/include/sys/stat.h:
-
-/usr/include/bits/stat.h:
-
-/usr/include/fcntl.h:
-
-/usr/include/bits/fcntl.h:
-
-/usr/include/bits/fcntl-linux.h:
 
 /usr/include/signal.h:
 

@@ -86,7 +86,7 @@ public:
 				//printf("%x,", data_[i]);
 			//}
 
-			printf("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbytes_transferred = %d\r\n", bytes_transferred);
+			//printf("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbytes_transferred = %d\r\n", bytes_transferred);
 			CProtocol protocol;
 			ProtocolHead head;
 			LoginInfo loginInfo;
@@ -94,13 +94,25 @@ public:
 			if(1 == recvCaprure){
 
 				rcvdSzie += bytes_transferred;
-				printf("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbytes_transferred = %d, rcvdSzie = %d, res.frameSize = %d\r\n", bytes_transferred, rcvdSzie, res.frameSize);
+				///printf("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbytes_transferred = %d, rcvdSzie = %d, res.frameSize = %d\r\n", bytes_transferred, rcvdSzie, res.frameSize);
 				memcpy(curPicDataPos, data_, bytes_transferred);
 				curPicDataPos += bytes_transferred;
 				if(curPicDataPos-picData > res.frameSize){
 
 					printf("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbytes_t curPicDataPos-picData = %d\r\n", curPicDataPos-picData);
 					protocol.ParseSnapResultPic(picData, curPicDataPos-picData, res);
+
+					capDev.missionNum = MissionMatch(&capDev);
+					printf("capDev.missionNum = %d\r\n", capDev.missionNum);
+
+					mission = MissionGet(capDev.missionNum);
+
+					if(NULL != mission){
+
+						//mission->illegalCapVectorMap[res.camNum].push_back(res);
+						G_illegalCapVectorMap.push_back(res);
+						//printf("111111111111111111111111111111111111111111111111mission->illegalCapVectorMap[res.camNum].size = %d\r\n", mission->illegalCapVectorMap[res.camNum].size());
+					}
 
 					memset(picData, 0, 1024*1024*10);
 					recvCaprure = 0;
@@ -112,51 +124,7 @@ public:
 				   boost::asio::placeholders::bytes_transferred));
 
 			 return;
-				#if 0
-				if(0 == res.PicSize[res.curRecvPicNum]){
-
-					char *p = picData;
-					char capTime[24];
-					memcpy(capTime, picData, 8);
-					p += 8;
-
-					res.PicSize[res.curRecvPicNum] = *((int32_t *)p);
-					p += sizeof(int32_t);
-
-					//char *pic = new char(picSize);
-					int fd = open(capTime, O_CREAT | O_RDWR | O_APPEND);		
-					if(fd > 0){
-
-						rcvdSzie += write(fd, p, picSize);
-						printf("write pic rcvdSzie = %d\r\n", rcvdSzie);
-						close(fd);
-					}
-
-					memset(picData, 0, curPicDataPos-picData);
-				
-				}
-				else{
-
-					int fd = open(capTime, O_CREAT | O_RDWR | O_APPEND);		
-					if(fd > 0){
-
-						int left = res.PicSize[res.curRecvPicNum] - rcvdSzie;
-						rcvdSzie += write(fd, picData, MIN(left, bytes_transferred));
-						if(bytes_transferred > left){
-
-
-						}
-						res.curRecvPicNum++;
-						
-					    printf("write pic rcvdSzie = %d\r\n", rcvdSzie);
-						close(fd);
-					}
-
-				}
-				#endif
 			}
-			
-			
 				
 			protocol.ParseFrameHead(data_, bytes_transferred, &head);
 
@@ -167,6 +135,20 @@ public:
 					
 					protocol.ParseLoginInfo(data_+5, bytes_transferred-5, &loginInfo);
 
+					string strDevNum= (char *)loginInfo.devNum;
+					
+					if(-1 == checkTextChineseOrNumberOrLetter(strDevNum)){// 检测设备号是否有特殊字符
+
+						int32_t frameLen = protocol.PackageResponeFrame(data_write, LOGIN_RESP, 0);
+						printf("login failed frameLen = %d\r\n", frameLen);
+						if(frameLen > 0){
+
+							boost::asio::async_write(socket_, boost::asio::buffer(data_write, frameLen),  boost::bind(&CCaptureDevSession::handle_write, this,
+							   boost::asio::placeholders::error));
+						}
+						return ;
+					}
+					
 					capDev.init(&socket_, &loginInfo);
 
 					capDev.missionNum = MissionMatch(&capDev);
@@ -395,12 +377,16 @@ public:
 					
 
 					protocol.ParseSnapResult(data_, bytes_transferred, res);
-					printf("res.camNum = %s\r\n", res.camNum);
+					printf("res.camNum = %s\r\n", res.camNum.c_str());
 					printf("res.plateVariety = %d\r\n", res.plateVariety);
 					printf("res.plateColor = %d\r\n", res.plateColor);
-					printf("res.plateNum = %s\r\n", res.plateNum);
+					printf("res.plateNum = %s\r\n", res.plateNum.c_str());
 					printf("res.picNum= %d\r\n", res.picNum);
 					printf("res.frameSize= %d\r\n", res.frameSize);
+					printf("res.capTime = %s\r\n", res.capTime.c_str());
+					printf("res.vedioName = %s\r\n", res.vedioName.c_str());
+					
+					res.missionNum = capDev.missionNum;
 
 					res.rcvdSzie = bytes_transferred;
 					if(res.frameSize > 0 && res.frameSize < 1024*1024*10){
@@ -412,7 +398,7 @@ public:
 						memcpy(curPicDataPos, data_, bytes_transferred);
 						curPicDataPos += bytes_transferred;
 						rcvdSzie += bytes_transferred;
-						
+
 						recvCaprure = 1;
 					}
 

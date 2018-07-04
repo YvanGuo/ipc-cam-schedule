@@ -5,6 +5,8 @@
 static MissionList_t G_MissionList;
 static MissionMap_t G_MissionMap;
 
+IllegalCapVectorMap_t G_illegalCapVectorMap;
+
 static mutex mu; 
 static mutex mu_SDC; 
 
